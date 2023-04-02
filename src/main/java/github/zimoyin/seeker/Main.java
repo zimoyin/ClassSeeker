@@ -21,6 +21,7 @@ public class Main implements Runnable{
             return true;
         });
 
+
     }
 
     public static int g(int a){
