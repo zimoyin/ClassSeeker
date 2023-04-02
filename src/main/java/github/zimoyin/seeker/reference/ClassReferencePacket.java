@@ -1,7 +1,6 @@
 package github.zimoyin.seeker.reference;
 
 import lombok.Data;
-import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,7 +13,7 @@ public class ClassReferencePacket {
     /**
      * Class Name
      */
-    private  String className;
+    private String className;
     /**
      * 类中接口集合
      */
@@ -87,6 +86,7 @@ public class ClassReferencePacket {
                     if (s.startsWith("L")) return s.substring(1);
                     return s;
                 })
+                .map(this::replaceAll)
                 .collect(Collectors.toList());
     }
 
@@ -103,7 +103,21 @@ public class ClassReferencePacket {
                     if (s.startsWith("L")) return s.substring(1);
                     return s;
                 })
+                .map(this::replaceAll)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private String replaceAll(String s) {
+        if (s.equals("V")) s = void.class.getTypeName();
+        if (s.equals("Z")) s = boolean.class.getTypeName();
+        if (s.equals("I")) s = int.class.getTypeName();
+        if (s.equals("D")) s = double.class.getTypeName();
+        if (s.equals("B")) s = byte.class.getTypeName();
+        if (s.equals("C")) s = char.class.getTypeName();
+        if (s.equals("S")) s = short.class.getTypeName();
+        if (s.equals("F")) s = float.class.getTypeName();
+        if (s.equals("J")) s = long.class.getTypeName();
+        return s;
     }
 }

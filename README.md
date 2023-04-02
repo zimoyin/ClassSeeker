@@ -9,18 +9,18 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 ## 如何使用ClassSeeker
 
 1. 首先，导入`ClassSeeker`类。  
-   所有的操作都从该类进行
+所有的操作都从该类进行
 
 ```java
 import github.zimoyin.seeker.ClassSeeker
 ```
 
 2. 接着你需要了解你需要的方法。该类通过了两个方法，以及部分重载。  
-   **注意：扫描器不会扫描标准库中的类**
+**注意：扫描器不会扫描标准库中的类**
 
 ```java
- ClassSeeker.findClass(...); // 查找指定的类，或者具有指定前缀的类，如 github.zimoyin 会查找该包下所有类
-        ClassSeeker.findClassAll(...); // 返回所有的类
+ClassSeeker.findClass(...); // 查找指定的类，或者具有指定前缀的类，如 github.zimoyin 会查找该包下所有类
+ClassSeeker.findClassAll(...); // 返回所有的类
 ```
 
 3. 方法可以传入的参数，这些参数不是必须的，你可以根据需要选择对应的重载方法来传入方法
@@ -37,6 +37,6 @@ ClassSeeker.ClassALL 包名或者类名的常量形式，使用该常量会扫�
 ```
 
 5. Filter 的参数 ClassReferencePacket  
+如果你想自己构建一个`ClassReferencePacket`请通过`ClassReferenceVisitor.getClassReference(...).getPacket()
 该参数是用于过滤器之中，这个类是针对class的分析封装。如果你需要一个继承或者拥有某个注解的class请考虑他   
-**注意：如果不需要 ClassReferencePacket 请不需要传入过滤器**   
-**注意：字符 I/D/L/V.. 等对应基础数据类型与Void等**  
+**注意：如果不需要 ClassReferencePacket 请不需要传入过滤器**
