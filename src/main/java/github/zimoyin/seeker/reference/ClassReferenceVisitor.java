@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static github.zimoyin.seeker.Main.timesIO;
+
 
 /**
  * 类引用分析
@@ -25,6 +27,7 @@ public class ClassReferenceVisitor extends ClassVisitor {
         classReader.accept(visitor, ClassReader.EXPAND_FRAMES);
         return visitor;
     }
+
 
     /**
      * 获取类引用
