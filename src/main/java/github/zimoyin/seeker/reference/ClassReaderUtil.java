@@ -2,6 +2,9 @@ package github.zimoyin.seeker.reference;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -108,13 +111,17 @@ public class ClassReaderUtil {
 
     /**
      * 从JAR文件中读取类的字节码
+     * 引入 JarFile 缓存，增加在同一jar中进行查找class时避免不必要的性能损耗
      *
      * @param jarFile   jar 路径
      * @param className class 全限定名
      */
     private static byte[] readClassBytesFromJar(File jarFile, String className) {
-        try (JarFile jar = new JarFile(jarFile)) {
+        JarFile jar = null;
+        try {
+            jar = getJarFileInstance(jarFile);
             JarEntry entry = jar.getJarEntry(className.replace('.', '/') + ".class");
+
             if (entry == null) {
 //                throw new IOException("无法在jar中读取到class文件: jar:" + jarFile + File.separator + "!" + className);
                 return null;
@@ -131,6 +138,44 @@ public class ClassReaderUtil {
             }
         } catch (IOException e) {
             return null;
+        } finally {
+            //清理最先添加的IO
+            if (CACHES.size() >= 3) {
+                Iterator<Map.Entry<File, JarFile>> iterator = CACHES.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    if (iterator.next().getValue() != jar) CACHES.remove(iterator.next().getKey());
+                }
+            }
         }
+    }
+
+
+    /**
+     * 获取 JarFile 实例
+     */
+    private synchronized static JarFile getJarFileInstance(File file) throws IOException {
+        JarFile jarFile = CACHES.get(file);
+        if (jarFile == null) jarFile = new JarFile(file);
+        CACHES.put(file, jarFile);
+        return jarFile;
+    }
+
+    /**
+     * 缓存
+     */
+    private static final HashMap<File, JarFile> CACHES = new HashMap<>();
+
+    /**
+     * 关闭所有流
+     */
+    public static void close() {
+        CACHES.forEach((file, jarFile) -> {
+            try {
+                jarFile.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        CACHES.clear();
     }
 }
