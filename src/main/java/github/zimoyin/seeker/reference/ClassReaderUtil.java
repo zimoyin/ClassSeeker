@@ -185,7 +185,10 @@ public class ClassReaderUtil {
      */
     public static void close(String jarPath) {
         try {
-            if (jarPath != null) CACHES.get(new File(jarPath)).close();
+            if (jarPath != null) {
+                JarFile file = CACHES.get(new File(jarPath));
+                if (file != null) file.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

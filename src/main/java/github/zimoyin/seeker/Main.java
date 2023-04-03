@@ -16,16 +16,9 @@ public class Main implements Runnable {
     public static void main(String[] args) throws IOException {
         ArrayList<Long> times = new ArrayList<Long>();
         long start = System.currentTimeMillis();
-        ClassSeeker.findClass(ClassSeeker.ClassALL, "out/rt.jar", packet -> {
-//            System.out.println(packet.getClassName());
-            s++;
-            System.out.print("\r" + s);
-            return true;
-        });
-        System.out.println();
-        long end = System.currentTimeMillis();
-        times.add(end - start);
-        System.out.println("ASM扫描时间: " + ((double) end - start) / 1000);
+        for (String cls : ClassSeeker.findClass(ClassSeeker.ClassALL, "out/rt.jar")) {
+            System.out.println(cls);
+        }
     }
 
     public static int g(int a) {
