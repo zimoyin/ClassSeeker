@@ -17,14 +17,7 @@ public class Main implements Runnable {
         ArrayList<Long> times = new ArrayList<Long>();
         long start = System.currentTimeMillis();
         ClassSeeker.findClass(ClassSeeker.ClassALL, "out/rt.jar", packet -> {
-            System.out.println(packet.getClassName());
-            System.out.println(packet.getMethodParameterCollection());
-            System.out.println(packet.getMethodCollection());
-            System.out.println(packet.getLocalVariableTypeCollection());
-            System.out.println(packet.getReturnValueCollection());
-            System.out.println();
-            System.out.println();
-            System.out.println();
+//            System.out.println(packet.getClassName());
             s++;
             System.out.print("\r" + s);
             return true;

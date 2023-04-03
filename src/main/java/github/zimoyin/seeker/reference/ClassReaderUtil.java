@@ -178,4 +178,16 @@ public class ClassReaderUtil {
         });
         CACHES.clear();
     }
+
+    /**
+     * 关闭指定的流
+     * @param jarPath 文件路径
+     */
+    public static void close(String jarPath) {
+        try {
+            if (jarPath != null) CACHES.get(new File(jarPath)).close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -83,7 +83,7 @@ public final class ClassSeeker {
             stream = stream.filter(s -> filter.test(buildClassReferencePacket(s, jarPath)));
         }
 
-        ClassReaderUtil.close();
+        ClassReaderUtil.close(jarPath);
         return stream.collect(Collectors.toList());
     }
 
