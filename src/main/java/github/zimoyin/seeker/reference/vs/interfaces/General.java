@@ -1,6 +1,4 @@
-package github.zimoyin.seeker.vs;
-
-import java.lang.annotation.Annotation;
+package github.zimoyin.seeker.reference.vs.interfaces;
 
 public interface General {
     /**
@@ -16,7 +14,7 @@ public interface General {
     /**
      * 获取公开程度修饰符
      */
-    public String getModifiers();
+    public String getModifier();
 
     /**
      * 是否是静态
@@ -31,12 +29,12 @@ public interface General {
     /**
      * 获取所有注解
      */
-    public Annotation[] getAnnotations();
+    public String[] getAnnotations();
 
     /**
      * 是否存在该注解
      *
      * @param annotation 注解全限定名
      */
-    public boolean isAnnotations(String annotation);
+    public boolean isAnnotation(String annotation);
 }

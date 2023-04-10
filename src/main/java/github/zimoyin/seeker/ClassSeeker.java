@@ -3,7 +3,7 @@ package github.zimoyin.seeker;
 import github.zimoyin.seeker.find.FindClass;
 import github.zimoyin.seeker.reference.ClassReaderUtil;
 import github.zimoyin.seeker.reference.ClassReferencePacket;
-import github.zimoyin.seeker.reference.visitor.ClassReferenceVisitor;
+import github.zimoyin.seeker.reference.vs.visitor.VisitorClass;
 import lombok.NonNull;
 
 import java.io.IOException;
@@ -90,7 +90,7 @@ public final class ClassSeeker {
 
     private static ClassReferencePacket buildClassReferencePacket(String className, String path) {
         try {
-            return ClassReferenceVisitor.getClassReference(className, path).getPacket();
+            return VisitorClass.getClassReference(className, path).getPacket();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
