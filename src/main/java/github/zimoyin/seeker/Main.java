@@ -1,44 +1,35 @@
 package github.zimoyin.seeker;
 
+import github.zimoyin.seeker.reference.ClassReferencePacket;
+
 import java.io.IOException;
-import java.util.ArrayList;
+import java.lang.annotation.Native;
 
 @Deprecated
-public class Main implements Runnable {
+public class Main  {
+    @Deprecated
     private String aa = "";
+    private String aag = "";
 
-    private static long s = 0;
-
-    public static ArrayList<Long> timesIO = new ArrayList<Long>();
-
+    public static void main(String[] args) throws IOException {
+        ClassSeeker.findClass(ClassSeeker.ClassALL, null, new Filter() {
+            @Override
+            public boolean test(ClassReferencePacket packet) {
+                if (!packet.getClassName().equals("github.zimoyin.seeker.Main")) return false;
+                System.out.println(packet.getClassName());
+                System.out.println(packet.getClassAnnotationCollection());
+                System.out.println(packet.getMethodAnnotationCollection());
+                System.out.println();
+                //字段注解
+                //方法参数注解
+                return true;
+            }
+        });
+    }
 
     @Deprecated
-    public static void main(String[] args) throws IOException {
-        ArrayList<Long> times = new ArrayList<Long>();
-        long start = System.currentTimeMillis();
-        for (String cls : ClassSeeker.findClass(ClassSeeker.ClassALL, "out/rt.jar")) {
-            System.out.println(cls);
-        }
-    }
-
-    public static int g(int a) {
+    public static int g(@Deprecated int a) {
         return 0;
     }
 
-    public static long ag(int a) {
-        return 0;
-    }
-
-    public static short aga(int a) {
-        return 0;
-    }
-
-    public static double agaa(int a) {
-        return 0;
-    }
-
-    @Override
-    public void run() {
-
-    }
 }

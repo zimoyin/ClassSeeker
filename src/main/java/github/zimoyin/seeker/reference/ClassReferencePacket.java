@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 字符 I/D/L/V.. 等对应基础数据类型与Void
+ * 字符
  */
 @Data
 public class ClassReferencePacket {
@@ -55,6 +55,9 @@ public class ClassReferencePacket {
      */
     private HashMap<String, String> ReturnValueCollection = new HashMap<>();
 
+    /**
+     * 构建
+     */
     public ClassReferencePacket build() {
         InterfaceCollection = getClassBuild(InterfaceCollection);
         FieldCollection.replaceAll((k, v) -> getClassBuild(v));

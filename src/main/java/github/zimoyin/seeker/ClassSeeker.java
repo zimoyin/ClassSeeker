@@ -3,7 +3,7 @@ package github.zimoyin.seeker;
 import github.zimoyin.seeker.find.FindClass;
 import github.zimoyin.seeker.reference.ClassReaderUtil;
 import github.zimoyin.seeker.reference.ClassReferencePacket;
-import github.zimoyin.seeker.reference.ClassReferenceVisitor;
+import github.zimoyin.seeker.reference.visitor.ClassReferenceVisitor;
 import lombok.NonNull;
 
 import java.io.IOException;
