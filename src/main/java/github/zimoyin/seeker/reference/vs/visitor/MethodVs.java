@@ -3,15 +3,10 @@ package github.zimoyin.seeker.reference.vs.visitor;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethod;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethodParameter;
 import lombok.Getter;
-import lombok.ToString;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
 @Getter
 public class MethodVs extends GeneralImpl implements GeneralMethod {
@@ -19,6 +14,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     private final String MethodDescription;
     private String ReturnTypeNameSource;
     private final ArrayList<String> ParameterTypeNameSource = new ArrayList<String>();
+    private final HashMap<String, String> ParameterNameSourceMap = new HashMap<>();
     private final ArrayList<String> ThrowExceptionNameSource = new ArrayList<>();
     private final ArrayList<String> AnnotationNameSource = new ArrayList<>();
     private final ArrayList<String> ParameterAnnotationNameSource = new ArrayList<>();
@@ -26,6 +22,11 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     private Modifier ModifierValue;
     private boolean isStatic;
     private boolean isFinal;
+    private String className;
+    private boolean isSynthetic;
+    private boolean isNative;
+    private final ArrayList<String> TryCatchBlockExceptionNameSource = new ArrayList<>();
+    private ClassVs thisClass;
 
     public MethodVs(String methodName, String methodDescription) {
         MethodName = methodName;
@@ -34,11 +35,26 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
 
     @Override
     public String toString() {
-        return "MethodVs{" +
-                "MethodName='" + MethodName + '\'' +
-                ", MethodDescription='" + MethodDescription + '\'' +
-                '}';
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(getModifier()).append(" ");
+        if (isStatic) buffer.append("static").append(" ");
+        if (isFinal) buffer.append("final").append(" ");
+        if (isSynthetic) buffer.append("synthetic").append(" ");
+        if (isNative) buffer.append("native").append(" ");
+        buffer.append(getReturnType()).append(" ");
+        buffer.append(getThisClassName()).append(".");
+        buffer.append(getName());
+        buffer.append("(");
+        if (ParameterTypeNameSource.size() > 0)
+            buffer.append(Arrays.toString(getParameterTypes()), 1, Arrays.toString(getParameterTypes()).length() - 1);
+        buffer.append(")").append(" ");
+        if (ThrowExceptionNameSource.size() > 0) buffer
+                .append("throws")
+                .append(" ")
+                .append(Arrays.toString(getThrowExceptions()), 1, Arrays.toString(getThrowExceptions()).length() - 1);
+        return buffer.toString();
     }
+
 
     @Override
     public String getName() {
@@ -81,10 +97,16 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     }
 
     @Override
-    public String[] getParameters() {
+    public String[] getParameterTypes() {
         return ParameterTypeNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
     }
 
+    @Override
+    public GeneralMethodParameter[] getParameters() {
+        ArrayList<GeneralMethodParameter> parameters = new ArrayList<>();
+        ParameterNameSourceMap.forEach((s, s2) -> parameters.add(new MethodLocalVariableVs(s, s2,ParameterAnnotationNameSource)));
+        return parameters.toArray(new GeneralMethodParameter[0]);
+    }
 
     @Override
     public String[] getThrowExceptions() {
@@ -92,10 +114,25 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     }
 
     @Override
+    public String[] getTryExceptions() {
+        return TryCatchBlockExceptionNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
+    }
+
+    @Override
     public GeneralMethodParameter[] getLocalVariable() {
         ArrayList<GeneralMethodParameter> variables = new ArrayList<>();
-        LocalVariableNameSource.forEach((s, s2) -> variables.add(new ParameterVs(s, getTypeClassNameGI(s2))));
+        LocalVariableNameSource.forEach((s, s2) -> variables.add(new MethodLocalVariableVs(s, s2)));
         return variables.toArray(new GeneralMethodParameter[0]);
+    }
+
+    @Override
+    public String getThisClassName() {
+        return className;
+    }
+
+    @Override
+    public ClassVs getThisClass() {
+        return thisClass;
     }
 
     protected void setReturn(String returnType) {
@@ -132,5 +169,25 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
 
     protected void setFinal(boolean isFinal) {
         this.isFinal = isFinal;
+    }
+
+    protected void setSynthetic(boolean isSynthetic) {
+        this.isSynthetic = isSynthetic;
+    }
+
+    protected void setNative(boolean isNative) {
+        this.isNative = isNative;
+    }
+
+    protected void setTryCatchBlockException(String type) {
+        this.TryCatchBlockExceptionNameSource.add(type);
+    }
+
+    protected void setClassName(String value) {
+        this.className = value;
+    }
+
+    protected void setThisClass(ClassVs classVsInstance) {
+        this.thisClass = classVsInstance;
     }
 }

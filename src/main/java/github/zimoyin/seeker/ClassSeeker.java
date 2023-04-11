@@ -2,7 +2,7 @@ package github.zimoyin.seeker;
 
 import github.zimoyin.seeker.find.FindClass;
 import github.zimoyin.seeker.reference.ClassReaderUtil;
-import github.zimoyin.seeker.reference.ClassReferencePacket;
+import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
 import github.zimoyin.seeker.reference.vs.visitor.VisitorClass;
 import lombok.NonNull;
 
@@ -80,7 +80,7 @@ public final class ClassSeeker {
                 .filter(s -> s.contains(packetOrClsName));
         if (filters != null) for (Filter filter : filters) {
             if (filter == null) continue;
-            stream = stream.filter(s -> filter.test(buildClassReferencePacket(s, jarPath)));
+            stream = stream.filter(s -> filter.test(buildClassVs(s, jarPath)));
         }
 
         ClassReaderUtil.close(jarPath);
@@ -88,9 +88,9 @@ public final class ClassSeeker {
     }
 
 
-    private static ClassReferencePacket buildClassReferencePacket(String className, String path) {
+    private static ClassVs buildClassVs(String className, String path) {
         try {
-            return VisitorClass.getClassReference(className, path).getPacket();
+            return VisitorClass.getClassReference(className, path).getClassVsInstance();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,5 @@
 package github.zimoyin.seeker.reference.vs.visitor;
 
-import github.zimoyin.seeker.reference.ClassReferencePacket;
 import lombok.Getter;
 import org.objectweb.asm.*;
 

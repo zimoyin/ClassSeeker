@@ -2,13 +2,11 @@ package github.zimoyin.seeker.reference.vs.visitor;
 
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralField;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 @Getter
-@ToString
 public class FieldVs extends GeneralImpl implements GeneralField {
     private final String FieldName;
     private final String FieldTypeNameSource;
@@ -17,12 +15,23 @@ public class FieldVs extends GeneralImpl implements GeneralField {
     private boolean isStatic;
     private boolean isFinal;
     private boolean isVolatile;
+    private ClassVs ClassVs;
 
     public FieldVs(String fieldName, String fieldTypeNameSource) {
         FieldName = fieldName;
         FieldTypeNameSource = fieldTypeNameSource;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(getModifier()).append(" ");
+        if (isStatic) buffer.append("static").append(" ");
+        if (isFinal) buffer.append("final").append(" ");
+        if (isVolatile) buffer.append("volatile").append(" ");
+        buffer.append(ClassVs.getName()).append(".").append(getName());
+        return buffer.toString();
+    }
 
     @Override
     public String getName() {
@@ -92,5 +101,9 @@ public class FieldVs extends GeneralImpl implements GeneralField {
 
     protected void setVolatile(boolean isVolatile) {
         this.isVolatile = isVolatile;
+    }
+
+    protected void setClassVs(ClassVs classVsInstance) {
+        this.ClassVs = classVsInstance;
     }
 }

@@ -2,10 +2,6 @@ package github.zimoyin.seeker.reference.vs.visitor;
 
 import github.zimoyin.seeker.reference.vs.interfaces.General;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 public abstract class GeneralImpl implements General {
 
     @Override
@@ -14,25 +10,28 @@ public abstract class GeneralImpl implements General {
     }
 
 
-    public String getTypeClassNameGI(String str) {
-        List<String> list = new ArrayList<>();
-        list.add(str);
-        return list.stream()
-                .filter(Objects::nonNull)
-                .map(s -> s.replaceAll("[\\[|\\]]", ""))
-                .map(s -> s.replaceAll("[\\(|\\)]", ""))
-                .map(s -> s.replaceAll("/", "."))
-                .map(s -> s.replaceAll(";", ""))
-                .map(s -> {
-                    if (s.startsWith("L")) return s.substring(1);
-                    return s;
-                })
-                .map(this::getTypeNameGI)
-                .findFirst()
-                .orElse(null);
+    protected String getTypeClassNameGI(String str) {
+//        List<String> list = new ArrayList<>();
+//        list.add(str);
+        if (str == null) return null;
+        String after = "";
+        if (str.contains("&array")) {
+            after = "[]";
+            str = str.replaceAll("&array", "");
+        }
+        str = str.replaceAll("[\\[|\\]]", "");
+        str = str.replaceAll("[\\(|\\)]", "");
+        str = str.replaceAll("/", ".");
+        str = str.replaceAll(";", "");
+        if (str.startsWith("L")) str = str.substring(1);
+        str = getTypeNameGI(str);
+        str = str + after;
+//        str = str.replaceAll("&array", "[]");
+
+        return str;
     }
 
-    public String getTypeNameGI(String s) {
+    protected String getTypeNameGI(String s) {
         if (s.equals("V")) s = void.class.getTypeName();
         if (s.equals("Z")) s = boolean.class.getTypeName();
         if (s.equals("I")) s = int.class.getTypeName();

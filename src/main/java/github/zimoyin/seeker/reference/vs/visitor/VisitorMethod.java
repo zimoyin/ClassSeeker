@@ -3,10 +3,6 @@ package github.zimoyin.seeker.reference.vs.visitor;
 import lombok.val;
 import org.objectweb.asm.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 class VisitorMethod extends MethodVisitor {
 
     private final MethodVs method;
@@ -35,12 +31,32 @@ class VisitorMethod extends MethodVisitor {
     //方法内部的变量
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        //TODO: 处理参数为数组的情况
         Type type = Type.getType(desc);
-        String value = type.getClassName().replaceAll("[\\[|\\]]", "");
-        method.setLocalVariable(name,value);
+        String className = type.getClassName();
+        if (className.contains("[]")) className += "&array";
+        String value = className.replaceAll("[\\[|\\]]", "");
+//        if (method.getName().equals("aa")) {
+//            System.err.println(index + ": " + name + " = " + value);
+//        }
+        //如果变量是this
+        if (index == 0 && name.equals("this")) {
+            method.setClassName(value);
+            return;
+        }
+        //如果变量是参数列表内的变量
+        int paramSize = method.getParameterTypeNameSource().size();
+        if (index > 0 && index <= paramSize) {
+            method.getParameterNameSourceMap().put(name, value);
+            return;
+        }
+        //如果是方法内定义的变量，且变量作用域为整个方法
+        method.setLocalVariable(name, value);
         super.visitLocalVariable(name, desc, signature, start, end, index);
     }
 
-
+    @Override
+    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+        method.setTryCatchBlockException(type);
+        super.visitTryCatchBlock(start, end, handler, type);
+    }
 }

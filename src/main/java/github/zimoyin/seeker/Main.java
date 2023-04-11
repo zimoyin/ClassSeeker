@@ -1,63 +1,81 @@
 package github.zimoyin.seeker;
 
+import github.zimoyin.seeker.reference.vs.interfaces.GeneralClass;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralField;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethod;
+import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethodParameter;
 import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
-import github.zimoyin.seeker.reference.vs.visitor.Modifier;
 import github.zimoyin.seeker.reference.vs.visitor.VisitorClass;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Deprecated
-public class Main  {
-    @Deprecated
-    private volatile String aa = "";
-    private static final String aag = null;
-    private static final int agaag = 0;
-
-    public Main() {
-    }
-
-    public Main(String aa) {
-        this.aa = aa;
-    }
+public class Main {
+    public String name;
+    public int version;
+    public String[] a;
+    private int[] b;
 
     @Deprecated
-    public static void main(String[] args) throws IOException {
-//        ClassSeeker.findClass(ClassSeeker.ClassALL, null, new Filter() {
-//            @Override
-//            public boolean test(ClassReferencePacket packet) {
-//                //字段注解
-//                //方法参数注解
-                  // 参数类型如果是数组需要加以标注
-//                return true;
-//            }
-//        });
+    public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException {
+        //TODO: 添加引用列表方法，返回类引用的所有的类
+        long start = System.currentTimeMillis();
+        List<String> list = ClassSeeker.findClass(ClassSeeker.ClassALL, "./out/rt.jar", new Filter() {
+            @Override
+            public boolean test(GeneralClass cls) {
+                try {
+                    System.out.println(cls);
+                    for (GeneralMethod method : cls.getMethods()) {
+                        System.out.println(method);
+                    }
+                    for (GeneralField field : cls.getFields()) {
+                        System.out.println(field);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                return true;
+            }
+        });
+        System.out.println();
+        System.out.println("class size: "+list.size());
+        System.out.println("time: "+(System.currentTimeMillis()-start)+"ms");
+    }
 
-        String av = "L[aga[]";
-        //TODO: 处理参数为数组的情况,使用标记法来实现，如果是数组则在处理前写入标记 &array 之后处理完成将该标记还原成 []
-//        ClassReferencePacket packet = VisitorClass.getClassReference(Main.class.getTypeName()).getPacket();
-        VisitorClass classReference = VisitorClass.getClassReference(Main.class.getTypeName());
-        ClassVs classVs = classReference.getClassVsInstance();
-
-
-        for (GeneralMethod method : classVs.getMethods()) {
-            System.out.println(method.getName());
-            System.out.println(Arrays.toString(method.getAnnotations()));
-            System.out.println(Arrays.toString(method.getParameters()));
-            System.out.println(method.getReturnType());
-            System.out.println();
+    private void a() {
+        @Deprecated int[] a = new int[12];
+        String[] b = new String[6];
+        String c = new String();
+        int d = 0;
+        if (true) {
+            int e = 0;
         }
-        System.out.println(classVs.getTypeName());
-    }
-
-    @Deprecated
-    public static int g(@Deprecated int a) {
+        int f = AA;
+        AA += AA;
         try {
-            throw new NullPointerException();
-        }catch (Exception e){}
-        return 0;
+            int g = 0;
+        } catch (Exception e) {
+        }
     }
 
+    int AA = 0;
+
+    private int[] a(@Deprecated  int A) {
+        int[] a = new int[12];
+        String[] b = new String[6];
+        String c = new String();
+        int d = 0;
+        if (true) {
+            int e = 0;
+        }
+        int f = AA;
+        AA += AA;
+        try {
+            int g = 0;
+        } catch (Exception e) {
+        }
+        return null;
+    }
 }

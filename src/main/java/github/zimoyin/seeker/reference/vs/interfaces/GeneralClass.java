@@ -8,6 +8,7 @@ public interface GeneralClass extends General {
      */
     public Class<?> newInstance() throws ClassNotFoundException;
 
+
     /**
      * 获取加载路径。如果改类是从谋个jar中加载则是那个jar的路径。
      */
@@ -51,6 +52,12 @@ public interface GeneralClass extends General {
      * @return 方法
      */
     public GeneralMethod getConstructor(String... paramsCls);
+    /**
+     * 获取某个空构造方法
+     *
+     * @return 方法
+     */
+    public GeneralMethod getConstructor();
 
     /**
      * 获取某个构造方法
@@ -68,15 +75,21 @@ public interface GeneralClass extends General {
      * @return 方法
      */
     public GeneralMethod getMethod(String name, String... paramsCls);
-
     /**
      * 获取某个方法
      *
-     * @param name   方法名称
-     * @param params 方法参数的类对象.注意如果是基础数据类型则是类型本身 如 ： int.class
+     * @param name      方法名称
+     * @param paramsCls 方法参数的全限定名.注意如果是基础数据类型则是类型本身的名称
      * @return 方法
      */
-    public GeneralMethod getMethod(String name, Class<?>... params);
+    public GeneralMethod getMethod(String name, Class<?>... paramsCls);
+    /**
+     * 获取某个空参方法
+     *
+     * @param name      方法名称
+     * @return 方法
+     */
+    public GeneralMethod getMethod(String name);
 
     /**
      * 获取所有方法

@@ -1,19 +1,16 @@
 package github.zimoyin.seeker.reference.vs.visitor;
 
 import github.zimoyin.seeker.reference.ClassReaderUtil;
-import github.zimoyin.seeker.reference.ClassReferencePacket;
+import lombok.NonNull;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 
 /**
  * 类引用分析
  */
 public class VisitorClass extends ClassVisitor {
-    private final HashSet<String> classSources = new HashSet<>();
-    private final ClassReferencePacket packet = new ClassReferencePacket();
     private final String path;
 
     private VisitorClass(String path) {
@@ -30,6 +27,15 @@ public class VisitorClass extends ClassVisitor {
         classReader.accept(visitor, ClassReader.EXPAND_FRAMES);
         return visitor;
     }
+    /**
+     * 获取类引用
+     */
+    public static VisitorClass getClassReference(Class<?> cls) throws IOException {
+        ClassReader classReader = new ClassReader(cls.getTypeName());
+        VisitorClass visitor = new VisitorClass("");
+        classReader.accept(visitor, ClassReader.EXPAND_FRAMES);
+        return visitor;
+    }
 
 
     /**
@@ -38,7 +44,7 @@ public class VisitorClass extends ClassVisitor {
      * @param cls   类名
      * @param paths jar路径
      */
-    public static VisitorClass getClassReference(String cls, String... paths) throws IOException {
+    public static VisitorClass getClassReference(@NonNull String cls, String... paths) throws IOException {
         byte[] bytes = null;
         String path = "";
         if (paths != null && paths.length > 0) {
@@ -58,11 +64,6 @@ public class VisitorClass extends ClassVisitor {
     }
 
 
-    public ClassReferencePacket getPacket() {
-        return this.packet.build();
-    }
-
-
     private ClassVs ClassVsInstance = null;
     private volatile boolean isInit = false;
 
@@ -76,13 +77,13 @@ public class VisitorClass extends ClassVisitor {
         ClassVsInstance = new ClassVs(name, superName, interfaces);
         ClassVsInstance.setPath(this.path);
         ClassVsInstance.setModifier(getModifier(access));
+        //设置类的修饰符
         boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
         boolean isInterface = (access & Opcodes.ACC_INTERFACE) != 0;
         boolean isEnum = (access & Opcodes.ACC_ENUM) != 0;
         boolean isAbstract = (access & Opcodes.ACC_ABSTRACT) != 0;
         boolean isFinal = (access & Opcodes.ACC_FINAL) != 0;
         boolean isAnnotation = (access & Opcodes.ACC_ANNOTATION) != 0;
-        boolean isSynthetic = (access & Opcodes.ACC_SYNTHETIC) != 0;
         boolean isModule = (access & Opcodes.ACC_MODULE) != 0;
         boolean isInnerClass = name.contains("$");//是否是内部类
         ClassVsInstance.setStatic(isStatic);
@@ -115,9 +116,15 @@ public class VisitorClass extends ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         Type type = Type.getType(desc);
-        //TODO: 处理参数为数组的情况
-        FieldVs fieldVs = new FieldVs(name, type.getClassName());
+        String className = type.getClassName();
+        //处理参数为数组的情况,添加数组后缀
+        if (className.contains("[]")) {
+            className = className + "&array";
+        }
+        FieldVs fieldVs = new FieldVs(name, className);
         ClassVsInstance.setField(fieldVs);
+        //设置字段所属的类
+        fieldVs.setClassVs(ClassVsInstance);
         // 获取可见程度
         fieldVs.setModifier(getModifier(access));
         //限制符
@@ -149,11 +156,15 @@ public class VisitorClass extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVs methodVs = new MethodVs(name, desc);
         ClassVsInstance.setMethod(methodVs);
+        //设置方法的this引用
+        methodVs.setThisClass(ClassVsInstance);
         // 获取方法的可见程度
         methodVs.setModifier(getModifier(access));
         //方法返回值
-        //TODO: 处理参数为数组的情况
         String returnType = desc.replaceAll("\\(.*\\)", "").trim();
+
+        if (returnType.contains("[")) returnType += "&array";
+
         if (!returnType.isEmpty()) {
             if (returnType.startsWith("L")) returnType = returnType.replaceFirst("L", "").trim();
             returnType = returnType.replaceAll("\\(.*\\).", "").trim();
@@ -162,10 +173,12 @@ public class VisitorClass extends ClassVisitor {
             throw new IllegalArgumentException("Method 返回值解析失败,返回值为 null");
         }
         //方法参数
-        //TODO: 处理参数为数组的情况
         Type[] argTypes = Type.getArgumentTypes(desc);
         for (Type argType : argTypes) {
-            String argName = argType.getClassName().replaceAll("[\\[|\\]]", "");
+            String className = argType.getClassName();
+            if (className.contains("[]")) className += "&array";
+
+            String argName = className.replaceAll("[\\[|\\]]", "");
             methodVs.setParameterType(argName);
         }
         //方法中抛出的异常的异常
@@ -176,6 +189,10 @@ public class VisitorClass extends ClassVisitor {
         //修饰符
         boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
         boolean isFinal = (access & Opcodes.ACC_FINAL) != 0;
+        boolean isSynthetic = (access & Opcodes.ACC_SYNTHETIC) != 0;
+        boolean isNative = (access & Opcodes.ACC_NATIVE) != 0;
+        methodVs.setSynthetic(isSynthetic);
+        methodVs.setNative(isNative);
         methodVs.setStatic(isStatic);
         methodVs.setFinal(isFinal);
         return new VisitorMethod(methodVs);

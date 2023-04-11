@@ -36,10 +36,9 @@ filters             过滤器。用于过滤出你需要的class。
 ClassSeeker.ClassALL 包名或者类名的常量形式，使用该常量会扫描出所有的类
 ```
 
-5. Filter 的参数 ClassReferencePacket  
-如果你想自己构建一个`ClassReferencePacket`请通过`ClassReferenceVisitor.getClassReference(...).getPacket()   
+5. Filter 的参数 [ClassVs.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fseeker%2Freference%2Fvs%2Fvisitor%2FClassVs.java)   
 该参数是用于过滤器之中，这个类是针对class的分析封装。如果你需要一个继承或者拥有某个注解的class请考虑他     
-**注意：如果不需要 ClassReferencePacket 请不需要传入过滤器**  
+**注意：如果不需要 ClassVs 请不需要传入过滤器**  
 **注意：如果只是想需要指定类名的类，不建议使用过滤器，他是非常消耗资源的一种方式**  
 6. ~~请手动关闭流`ClassReaderUtil.close();` 否则会造成一定的资源无法被回收~~  注意可以重复关闭，但是不要频繁关闭否则会导致缓存不可用，导致效率低下  
 

@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 
 @Getter
@@ -117,6 +118,7 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
 
     @Override
     public GeneralClass getSuperClassVs() throws IOException {
+        if (SuperClassNameSource == null) return null;
         return VisitorClass.getClassReference(SuperClassNameSource, getLoadPath()).getClassVsInstance();
     }
 
@@ -134,12 +136,19 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     }
 
     @Override
+    public GeneralMethod getConstructor() {
+        return getConstructor(new String[0]);
+    }
+
+    @Override
     public GeneralMethod getConstructor(String... paramsCls) {
-        //TODO: 验证是否可用
+        if (Arrays.stream(paramsCls).anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("方法参数类型列表中禁止传入 'null' 值");
+        }
         return Arrays.stream(getConstructors())
-                .filter(generalMethod -> generalMethod.getParameters().length == paramsCls.length)
+                .filter(generalMethod -> generalMethod.getParameterTypes().length == paramsCls.length)
                 .filter(generalMethod -> {
-                    String[] parameters = generalMethod.getParameters();
+                    String[] parameters = generalMethod.getParameterTypes();
                     for (int i = 0; i < parameters.length; i++)
                         if (!parameters[i].equals(paramsCls[i])) return false;
                     return true;
@@ -148,11 +157,13 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
 
     @Override
     public GeneralMethod getConstructor(Class<?>... params) {
-        //TODO: 验证是否可用
+        if (Arrays.stream(params).anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("方法参数类型列表中禁止传入 'null' 值");
+        }
         return Arrays.stream(getConstructors())
-                .filter(generalMethod -> generalMethod.getParameters().length == params.length)
+                .filter(generalMethod -> generalMethod.getParameterTypes().length == params.length)
                 .filter(generalMethod -> {
-                    String[] parameters = generalMethod.getParameters();
+                    String[] parameters = generalMethod.getParameterTypes();
                     for (int i = 0; i < parameters.length; i++)
                         if (!parameters[i].equals(params[i].getTypeName())) return false;
                     return true;
@@ -160,29 +171,36 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     }
 
     @Override
+    public GeneralMethod getMethod(String name) {
+        return getMethod(name,new String[0]);
+    }
+    @Override
     public GeneralMethod getMethod(String name, String... paramsCls) {
-        //TODO: 验证是否可用
-        return Arrays.stream(getConstructors())
+        if (Arrays.stream(paramsCls).anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("方法参数类型列表中禁止传入 'null' 值");
+        }
+        return Arrays.stream(getMethods())
                 .filter(generalMethod -> generalMethod.getName().equals(name))
-                .filter(generalMethod -> generalMethod.getParameters().length == paramsCls.length)
+                .filter(generalMethod -> generalMethod.getParameterTypes().length == paramsCls.length)
                 .filter(generalMethod -> {
-                    String[] parameters = generalMethod.getParameters();
+                    String[] parameters = generalMethod.getParameterTypes();
                     for (int i = 0; i < parameters.length; i++)
                         if (!parameters[i].equals(paramsCls[i])) return false;
                     return true;
                 }).findFirst().orElse(null);
     }
-
     @Override
-    public GeneralMethod getMethod(String name, Class<?>... params) {
-        //TODO: 验证是否可用
-        return Arrays.stream(getConstructors())
+    public GeneralMethod getMethod(String name, Class<?>... paramsCls) {
+        if (Arrays.stream(paramsCls).anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("方法参数类型列表中禁止传入 'null' 值");
+        }
+        return Arrays.stream(getMethods())
                 .filter(generalMethod -> generalMethod.getName().equals(name))
-                .filter(generalMethod -> generalMethod.getParameters().length == params.length)
+                .filter(generalMethod -> generalMethod.getParameterTypes().length == paramsCls.length)
                 .filter(generalMethod -> {
-                    String[] parameters = generalMethod.getParameters();
+                    String[] parameters = generalMethod.getParameterTypes();
                     for (int i = 0; i < parameters.length; i++)
-                        if (!parameters[i].equals(params[i].getTypeName())) return false;
+                        if (!parameters[i].equals(paramsCls[i].getTypeName())) return false;
                     return true;
                 }).findFirst().orElse(null);
     }
@@ -200,19 +218,16 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
 
     @Override
     public GeneralField getFieldByName(String name) {
-        //TODO:待测试
         return Arrays.stream(getFields()).filter(field -> field.getName().equals(name)).findFirst().orElse(null);
     }
 
     @Override
     public GeneralField[] getFieldByType(String name) {
-        //TODO:待测试
         return Arrays.stream(getFields()).filter(field -> field.getType().equals(name)).toArray(GeneralField[]::new);
     }
 
     @Override
     public GeneralField[] getFieldByType(Class<?> name) {
-        //TODO:待测试
         return Arrays.stream(getFields()).filter(field -> field.getType().equals(name.getTypeName())).toArray(GeneralField[]::new);
     }
 
