@@ -14,8 +14,10 @@ public interface GeneralMethod extends General {
     public String[] getParameterTypes();
 
     /**
-     * 获取方法中的参数列表中的参数
+     * 获取方法中的参数列表中的参数。
+     * 注意：此方法可能会导致无法获取到具体的变量列表。请以 getParameterTypes 方法为基准进行编码
      */
+    @Deprecated
     public GeneralMethodParameter[] getParameters();
 
     /**

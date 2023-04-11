@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 @Getter
 public class MethodVs extends GeneralImpl implements GeneralMethod {
@@ -92,20 +93,73 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     }
 
     @Override
+    public ArrayList<String> getReferences() {
+        ArrayList<String> refs = new ArrayList<String>();
+        refs.add(getRef(getReturnType()));
+        for (String type : getParameterTypes()) {
+            refs.add(getRef(type));
+        }
+//        System.err.println(getMethodName());
+        for (GeneralMethodParameter localVar : getLocalVariable()) {
+            refs.add(getRef(localVar.getType()));
+//            System.err.println(localVar.getName()+": "+localVar.getType());
+        }
+
+        refs.addAll(List.of(getAnnotations()));
+        refs.addAll(List.of(getTryExceptions()));
+        refs.addAll(List.of(getThrowExceptions()));
+        return refs;
+    }
+
+    private String getRef(String type) {
+        String ref = type.replaceAll("[\\[|\\]]", "");
+        ref = ref.replaceAll("[\\[|\\]]", "");
+        return ref;
+    }
+
+    @Override
     public String getReturnType() {
         return getTypeClassNameGI(ReturnTypeNameSource);
     }
 
     @Override
     public String[] getParameterTypes() {
+//        parameterSafe();
         return ParameterTypeNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
     }
 
     @Override
     public GeneralMethodParameter[] getParameters() {
+//        parameterSafe();
         ArrayList<GeneralMethodParameter> parameters = new ArrayList<>();
-        ParameterNameSourceMap.forEach((s, s2) -> parameters.add(new MethodLocalVariableVs(s, s2,ParameterAnnotationNameSource)));
+        ParameterNameSourceMap.forEach((s, s2) -> parameters.add(new MethodLocalVariableVs(s, s2, ParameterAnnotationNameSource)));
         return parameters.toArray(new GeneralMethodParameter[0]);
+    }
+
+    /**
+     * 检测参数列表参数是否对应
+     * TODO: 此方法用于开发时对信息进行检测。上传时请删掉此方法
+     * TODO：如果方法未被检测到方法局部变量导致无法执行 visitLocalVariable 方法，导致无法获取到方法的参数列表具体信息。准备寻找新的方式来获取
+     */
+    protected void parameterSafe() {
+        if (ParameterNameSourceMap.size() != ParameterTypeNameSource.size()) {
+            System.err.println("在VisitorClass 与 VisitorMethod 中解析出来的变量列表数量不一致");
+            System.err.println("JarPath: " + getThisClass().getPath());
+            System.err.println("ClassDesc: " + getThisClass());
+            System.err.println("MethodName: " + getName());
+            System.err.println("Method: " + MethodDescription);
+            System.err.println("Method  isStatic: " + isStatic);
+            System.err.println("Method  isFinal: " + isFinal);
+            System.err.println("Method  isNative: " + isNative);
+            System.err.println("Method  isSynthetic: " + isSynthetic);
+            System.err.println("ParameterNameSourceMap" + ParameterNameSourceMap);
+            System.err.println("ParameterTypeNameSource" + ParameterTypeNameSource);
+            System.err.println("可能原因：没有调用 github.zimoyin.seeker.reference.vs.visitor.VisitorMethod.visitLocalVariable 方法，导致该方法未解析");
+            System.err.println("可能原因：该方法为静态方法或者存在其他修饰符");
+            System.err.println("可能原因：该方法未被检测到方法局部变量导致无法执行 visitLocalVariable 方法");
+            System.err.println();
+            throw new IllegalArgumentException("对ClassSeeker开发者留言：在解析方法时，发现解析的方法参数个数不一致,请检查 github.zimoyin.seeker.reference.vs.visitor.VisitorMethod.visitLocalVariable 方法是否存在BUG");
+        }
     }
 
     @Override
@@ -127,7 +181,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
 
     @Override
     public String getThisClassName() {
-        return className;
+        return className == null ? thisClass.getName() : className;
     }
 
     @Override

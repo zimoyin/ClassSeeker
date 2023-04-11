@@ -1,19 +1,19 @@
 package github.zimoyin.seeker;
 
+import github.zimoyin.seeker.reference.ClassVsFactory;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralClass;
-import github.zimoyin.seeker.reference.vs.interfaces.GeneralField;
-import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethod;
-import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethodParameter;
 import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
-import github.zimoyin.seeker.reference.vs.visitor.VisitorClass;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Deprecated
 public class Main {
     public String name;
+    private Integer agaa;
     public int version;
     public String[] a;
     private int[] b;
@@ -27,14 +27,14 @@ public class Main {
             public boolean test(GeneralClass cls) {
                 try {
                     System.out.println(cls);
-                    for (GeneralMethod method : cls.getMethods()) {
-                        System.out.println(method);
+                    System.out.println(cls.getSuperClassVs());
+                    System.out.println(Arrays.toString(cls.getInterfacesVs()));
+                    for (String reference : cls.getReferences()) {
+                        System.out.println(reference);
                     }
-                    for (GeneralField field : cls.getFields()) {
-                        System.out.println(field);
-                    }
+                    System.out.println();
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    System.err.println(e.getMessage());
                 }
                 return true;
             }
@@ -42,9 +42,17 @@ public class Main {
         System.out.println();
         System.out.println("class size: "+list.size());
         System.out.println("time: "+(System.currentTimeMillis()-start)+"ms");
-    }
 
-    private void a() {
+        ClassVs classVS = ClassVsFactory.getClassVS(Main.class);
+        System.out.println(classVS);
+        for (String reference : classVS.getReferences()) {
+            System.out.println(reference);
+        }
+    }
+    private void  aga(Object a){}
+    private void  agag(Menu a){}
+
+    private void a() throws IOException {
         @Deprecated int[] a = new int[12];
         String[] b = new String[6];
         String c = new String();
@@ -52,8 +60,6 @@ public class Main {
         if (true) {
             int e = 0;
         }
-        int f = AA;
-        AA += AA;
         try {
             int g = 0;
         } catch (Exception e) {
@@ -62,7 +68,7 @@ public class Main {
 
     int AA = 0;
 
-    private int[] a(@Deprecated  int A) {
+    private int[] a(@Deprecated int A) {
         int[] a = new int[12];
         String[] b = new String[6];
         String c = new String();

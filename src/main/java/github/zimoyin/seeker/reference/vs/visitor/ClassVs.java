@@ -1,5 +1,6 @@
 package github.zimoyin.seeker.reference.vs.visitor;
 
+import github.zimoyin.seeker.reference.ClassVsFactory;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralClass;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralField;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethod;
@@ -9,7 +10,9 @@ import lombok.Setter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -32,6 +35,7 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     @Setter
     private ClassLoader classLoader = null;
     private String path = "";
+    private String[] LibPaths;
 
     public ClassVs(String className, String superClassName, String[] interfaces) {
         ClassNameSource = className;
@@ -107,6 +111,11 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     }
 
     @Override
+    public String[] getLibs() {
+        return LibPaths;
+    }
+
+    @Override
     public String getPackage() {
         return getTypeName().substring(0, getTypeName().lastIndexOf("." + getSimpleName()));
     }
@@ -119,8 +128,9 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     @Override
     public GeneralClass getSuperClassVs() throws IOException {
         if (SuperClassNameSource == null) return null;
-        return VisitorClass.getClassReference(SuperClassNameSource, getLoadPath()).getClassVsInstance();
+        return ClassVsFactory.getClassVS(getSuperClassName(), getLibs());
     }
+
 
     /**
      * 获取父类的名称
@@ -128,6 +138,20 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     @Override
     public String getSuperClassName() {
         return getTypeClassNameGI(SuperClassNameSource);
+    }
+
+    @Override
+    public String[] getInterfaces() {
+        return Arrays.stream(InterfacesSource).map(this::getTypeClassNameGI).toArray(String[]::new);
+    }
+
+    @Override
+    public GeneralClass[] getInterfacesVs() {
+        String[] interfaces = getInterfaces();
+        if (interfaces.length == 0) return null;
+        return Arrays.stream(interfaces)
+                .map(this::applyInterfaceNameToClassVs)
+                .toArray(ClassVs[]::new);
     }
 
     @Override
@@ -172,8 +196,9 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
 
     @Override
     public GeneralMethod getMethod(String name) {
-        return getMethod(name,new String[0]);
+        return getMethod(name, new String[0]);
     }
+
     @Override
     public GeneralMethod getMethod(String name, String... paramsCls) {
         if (Arrays.stream(paramsCls).anyMatch(Objects::isNull)) {
@@ -189,6 +214,7 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
                     return true;
                 }).findFirst().orElse(null);
     }
+
     @Override
     public GeneralMethod getMethod(String name, Class<?>... paramsCls) {
         if (Arrays.stream(paramsCls).anyMatch(Objects::isNull)) {
@@ -251,6 +277,42 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
         return isEnum;
     }
 
+
+    @Override
+    public ArrayList<String> getReferences() {
+        ArrayList<String> refs = new ArrayList<String>();
+        String[] annotations = getAnnotations();
+        List<String> fieldRef = new ArrayList<>();
+        for (GeneralField generalField : getFields()) {
+            ArrayList<String> fieldReferences = generalField.getReferences();
+            fieldRef.addAll(fieldReferences);
+        }
+        List<String> methodRef = new ArrayList<String>();
+        for (GeneralMethod method : getMethods()) {
+            methodRef.addAll(method.getReferences());
+        }
+        String[] interfaces = getInterfaces();
+        String superClassName = getSuperClassName();
+        refs.addAll(List.of(annotations));
+        refs.addAll(fieldRef);
+        refs.addAll(methodRef);
+        refs.addAll(List.of(interfaces));
+        refs.add(superClassName);
+        return refs.stream()
+                .filter(Objects::nonNull)
+                .filter(s -> !s.equals("void"))
+                .filter(s -> !s.equals("int"))
+                .filter(s -> !s.equals("short"))
+                .filter(s -> !s.equals("long"))
+                .filter(s -> !s.equals("byte"))
+                .filter(s -> !s.equals("double"))
+                .filter(s -> !s.equals("float"))
+                .filter(s -> !s.equals("boolean"))
+                .filter(s -> !s.equals("char"))
+                .distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
     protected void setAnnotationNameSource(String annotationName) {
         this.AnnotationNameSource.add(annotationName);
     }
@@ -301,5 +363,17 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
 
     protected void setPath(String path) {
         this.path = path;
+    }
+
+    private ClassVs applyInterfaceNameToClassVs(String s) {
+        try {
+            return ClassVsFactory.getClassVS(s, getLibs());
+        } catch (IOException e) {
+            throw new RuntimeException("无法解析的父接口: " + s, e);
+        }
+    }
+
+    protected void setLibs(String[] libs) {
+        this.LibPaths = Arrays.stream(libs).distinct().toArray(String[]::new);
     }
 }

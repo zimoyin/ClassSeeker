@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Getter
 public class FieldVs extends GeneralImpl implements GeneralField {
@@ -71,6 +72,16 @@ public class FieldVs extends GeneralImpl implements GeneralField {
     @Override
     public boolean isAnnotation(String annotation) {
         return Arrays.asList(getAnnotations()).contains(annotation);
+    }
+
+    @Override
+    public ArrayList<String> getReferences() {
+        ArrayList<String> refs = new ArrayList<String>();
+        String ref = getType().replaceAll("[\\[|\\]]", "");
+        ref = ref.replaceAll("[\\[|\\]]", "");
+        refs.add(ref);
+        refs.addAll(List.of(getAnnotations()));
+        return refs;
     }
 
     @Override

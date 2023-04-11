@@ -1,10 +1,6 @@
 package github.zimoyin.seeker.reference.vs.visitor;
 
-import github.zimoyin.seeker.reference.ClassReaderUtil;
-import lombok.NonNull;
 import org.objectweb.asm.*;
-
-import java.io.IOException;
 
 
 /**
@@ -12,60 +8,16 @@ import java.io.IOException;
  */
 public class VisitorClass extends ClassVisitor {
     private final String path;
-
-    private VisitorClass(String path) {
-        super(Opcodes.ASM9);
-        this.path = path;
-    }
-
-    /**
-     * 获取类引用
-     */
-    public static VisitorClass getClassReference(byte[] bytes) throws IOException {
-        ClassReader classReader = new ClassReader(bytes);
-        VisitorClass visitor = new VisitorClass("");
-        classReader.accept(visitor, ClassReader.EXPAND_FRAMES);
-        return visitor;
-    }
-    /**
-     * 获取类引用
-     */
-    public static VisitorClass getClassReference(Class<?> cls) throws IOException {
-        ClassReader classReader = new ClassReader(cls.getTypeName());
-        VisitorClass visitor = new VisitorClass("");
-        classReader.accept(visitor, ClassReader.EXPAND_FRAMES);
-        return visitor;
-    }
-
-
-    /**
-     * 获取类引用
-     *
-     * @param cls   类名
-     * @param paths jar路径
-     */
-    public static VisitorClass getClassReference(@NonNull String cls, String... paths) throws IOException {
-        byte[] bytes = null;
-        String path = "";
-        if (paths != null && paths.length > 0) {
-            for (String path0 : paths) {
-                if (bytes != null) break;
-                path = path0;
-                bytes = ClassReaderUtil.readClassBytes(cls, new String[]{path0}, true);
-            }
-        } else {
-            bytes = ClassReaderUtil.readClassBytes(cls, null, true);
-        }
-
-        ClassReader classReader = new ClassReader(bytes);
-        VisitorClass visitor = new VisitorClass(path);
-        classReader.accept(visitor, ClassReader.EXPAND_FRAMES);
-        return visitor;
-    }
-
-
+    private final String[] libs;
     private ClassVs ClassVsInstance = null;
     private volatile boolean isInit = false;
+
+    public VisitorClass(String path, String[] libs) {
+        super(Opcodes.ASM9);
+        this.path = path;
+        this.libs = libs;
+    }
+
 
     public ClassVs getClassVsInstance() {
         return isInit ? ClassVsInstance : null;
@@ -76,6 +28,7 @@ public class VisitorClass extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         ClassVsInstance = new ClassVs(name, superName, interfaces);
         ClassVsInstance.setPath(this.path);
+        ClassVsInstance.setLibs(this.libs);
         ClassVsInstance.setModifier(getModifier(access));
         //设置类的修饰符
         boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;

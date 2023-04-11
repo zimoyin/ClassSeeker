@@ -2,8 +2,8 @@ package github.zimoyin.seeker;
 
 import github.zimoyin.seeker.find.FindClass;
 import github.zimoyin.seeker.reference.ClassReaderUtil;
+import github.zimoyin.seeker.reference.ClassVsFactory;
 import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
-import github.zimoyin.seeker.reference.vs.visitor.VisitorClass;
 import lombok.NonNull;
 
 import java.io.IOException;
@@ -90,7 +90,7 @@ public final class ClassSeeker {
 
     private static ClassVs buildClassVs(String className, String path) {
         try {
-            return VisitorClass.getClassReference(className, path).getClassVsInstance();
+            return ClassVsFactory.getClassVS(className, path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

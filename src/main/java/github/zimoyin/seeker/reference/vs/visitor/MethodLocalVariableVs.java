@@ -69,4 +69,13 @@ public class MethodLocalVariableVs extends GeneralImpl implements GeneralMethodP
     public boolean isAnnotation(String annotation) {
         return Arrays.asList(getAnnotations()).contains(annotation);
     }
+
+    @Override
+    public ArrayList<String> getReferences() {
+        ArrayList<String> refs = new ArrayList<String>();
+        String ref = getType().replaceAll("[\\[|\\]]", "");
+        ref = ref.replaceAll("[\\[|\\]]", "");
+        refs.add(ref);
+        return refs;
+    }
 }

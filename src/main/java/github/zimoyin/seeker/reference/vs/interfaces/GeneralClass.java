@@ -15,6 +15,11 @@ public interface GeneralClass extends General {
     public String getLoadPath();
 
     /**
+     * 获取所有库的路径，如果当前类引用的类在所有的库文件中都没有将会发生异常
+     * 注意：如果类中有其他jar中的类引用且该类的引用在libs里面无法找到，会报错!!!
+     */
+    public String[] getLibs();
+    /**
      * 获取包名
      */
     public String getPackage();
@@ -39,6 +44,16 @@ public interface GeneralClass extends General {
      * 父类的名称
      */
     public String getSuperClassName();
+
+    /**
+     * 获取接口名称
+     */
+    public String[] getInterfaces();
+
+    /**
+     * 获取接口实例
+     */
+    public GeneralClass[] getInterfacesVs();
 
     /**
      * 获取构造方法

@@ -1,5 +1,7 @@
 package github.zimoyin.seeker.reference.vs.interfaces;
 
+import java.util.ArrayList;
+
 public interface General {
     /**
      * 获取名称
@@ -37,4 +39,9 @@ public interface General {
      * @param annotation 注解全限定名
      */
     public boolean isAnnotation(String annotation);
+
+    /**
+     * 获取在当前域中的引用对象
+     */
+    public ArrayList<String> getReferences();
 }
