@@ -13,6 +13,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class ClassSeeker {
+    /**
+     * 当类被ASM读取时发生了异常，在AbnormalBlocking为true的时候会抛出异常，并在某段程序中对程序进行中断
+     * 如果为false不会抛出异常，而是打印异常，并返回null，如果处理程序没有处理null的逻辑会抛出空指针异常
+     */
+    public static boolean AbnormalBlocking = true;
+
     private ClassSeeker() {
     }
 
@@ -75,9 +81,10 @@ public final class ClassSeeker {
         //查找所有类
         if (jarPath != null) list = FindClass.getJarClassName(jarPath);
         else list = FindClass.getClazzNameForURL(packetOrClsName, true);
+        //过滤符合要求的类
+        list = list.stream().filter(s -> s != null && !s.isEmpty()).filter(s -> s.startsWith(packetOrClsName)).collect(Collectors.toList());
         //如果过滤器为null，则默认放行
-        Stream<String> stream = list.stream().filter(Objects::nonNull)
-                .filter(s -> s.contains(packetOrClsName));
+        Stream<String> stream = list.stream().filter(Objects::nonNull).filter(s -> s.contains(packetOrClsName));
         if (filters != null) for (Filter filter : filters) {
             if (filter == null) continue;
             stream = stream.filter(s -> filter.test(buildClassVs(s, jarPath)));
@@ -87,12 +94,44 @@ public final class ClassSeeker {
         return stream.collect(Collectors.toList());
     }
 
+    /**
+     * 查找指定的类或者包。提供提供的包或类的前缀进行搜索
+     * <p>
+     * 支持kotlin 调用
+     * ClassSeeker.findClass("github.zimoyin.ffm",null) {
+     * true
+     * }
+     *
+     * @param packetOrClsName 包名 或者类名
+     * @param jarPath         jar 路径
+     * @param filter          过滤器
+     * @return 查找到的类
+     */
+    public static List<String> findClass(@NonNull String packetOrClsName, String jarPath, Filter filter) throws IOException {
+        List<String> list;
+        //查找所有类
+        if (jarPath != null) list = FindClass.getJarClassName(jarPath);
+        else list = FindClass.getClazzNameForURL(packetOrClsName, true);
+        //过滤符合要求的类
+        list = list.stream().filter(s -> s != null && !s.isEmpty()).filter(s -> s.startsWith(packetOrClsName)).collect(Collectors.toList());
+        //如果过滤器为null，则默认放行
+        Stream<String> stream = list.stream().filter(Objects::nonNull).filter(s -> s.contains(packetOrClsName));
+        if (filter != null) stream = stream.filter(s -> filter.test(buildClassVs(s, jarPath)));
+        ClassReaderUtil.close(jarPath);
+        return stream.collect(Collectors.toList());
+    }
+
 
     private static ClassVs buildClassVs(String className, String path) {
         try {
             return ClassVsFactory.getClassVS(className, path);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            if (AbnormalBlocking){
+                throw new RuntimeException(e);
+            }else {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 }

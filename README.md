@@ -16,7 +16,7 @@ import github.zimoyin.seeker.ClassSeeker
 ```
 
 2. 接着你需要了解你需要的方法。该类通过了两个方法，以及部分重载。  
-**注意：扫描器不会扫描标准库中的类**
+**注意：扫描器不会扫描标准库中的类,如果你在你的项目里面运行的话**
 
 ```java
 ClassSeeker.findClass(...); // 查找指定的类，或者具有指定前缀的类，如 github.zimoyin 会查找该包下所有类
@@ -41,4 +41,7 @@ ClassSeeker.ClassALL 包名或者类名的常量形式，使用该常量会扫�
 **注意：如果不需要 ClassVs 请不需要传入过滤器**  
 **注意：如果只是想需要指定类名的类，不建议使用过滤器，他是非常消耗资源的一种方式**  
 6. ~~请手动关闭流`ClassReaderUtil.close();` 否则会造成一定的资源无法被回收~~  注意可以重复关闭，但是不要频繁关闭否则会导致缓存不可用，导致效率低下  
-
+7. 使用类描述对某个类进行分析
+```java
+ClassVs classVS = ClassVsFactory.getClassVS(Main.class);
+```

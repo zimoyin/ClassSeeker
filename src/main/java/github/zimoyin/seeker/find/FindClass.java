@@ -21,7 +21,7 @@ public class FindClass {
     private static final String CLASS_SUFFIX = ".class";
     private static final String CLASS_FILE_PREFIX = File.separator + "classes" + File.separator;
     private static final String PACKAGE_SEPARATOR = ".";
-    private static final boolean isLog = true;
+    public static boolean isLog = false;
 
     /**
      * 通过JAR的URL路径来解析

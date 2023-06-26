@@ -1,5 +1,6 @@
 package github.zimoyin.seeker;
 
+import github.zimoyin.seeker.find.FindClass;
 import github.zimoyin.seeker.reference.ClassVsFactory;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralClass;
 import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
@@ -20,34 +21,26 @@ public class Main {
 
     @Deprecated
     public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException {
+        FindClass.isLog = true;
         //TODO: 添加引用列表方法，返回类引用的所有的类
         long start = System.currentTimeMillis();
-        List<String> list = ClassSeeker.findClass(ClassSeeker.ClassALL, "./out/rt.jar", new Filter() {
-            @Override
-            public boolean test(GeneralClass cls) {
-                try {
-                    System.out.println(cls);
-                    System.out.println(cls.getSuperClassVs());
-                    System.out.println(Arrays.toString(cls.getInterfacesVs()));
-                    for (String reference : cls.getReferences()) {
-                        System.out.println(reference);
-                    }
-                    System.out.println();
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                }
-                return true;
-            }
+        List<String> list = ClassSeeker.findClass("zimoyin.seeker", null, cls -> {
+//            try {
+//                System.out.println(cls);
+//                Class<?> instance = cls.newInstance();
+//            } catch (Exception e) {
+//                System.err.println(e.getMessage());
+//            }
+            return true;
         });
+
+        for (String s : list) {
+            System.out.println(s);
+        }
+
         System.out.println();
         System.out.println("class size: "+list.size());
         System.out.println("time: "+(System.currentTimeMillis()-start)+"ms");
-
-        ClassVs classVS = ClassVsFactory.getClassVS(Main.class);
-        System.out.println(classVS);
-        for (String reference : classVS.getReferences()) {
-            System.out.println(reference);
-        }
     }
     private void  aga(Object a){}
     private void  agag(Menu a){}
