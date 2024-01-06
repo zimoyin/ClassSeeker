@@ -4,7 +4,7 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 
 # 入门指南
 
-要使用ClassSeeker，您需要自行打包并依赖。并且你还需要ASM 9.0 的依赖  
+注意可能你还需要ASM 9.0 的依赖  
 引入当前的依赖
 ```xml
 <repositories>
