@@ -32,8 +32,56 @@ public final class ClassSeeker {
      *
      * @return 查找到的类
      */
+    public static List<String> findClassAll(Filter... filter) throws IOException {
+        return findClass(ClassALL, null, filter);
+    }
+
+    /**
+     * 查找所有class
+     * <p>
+     * 支持kotlin调用
+     * ClassSeeker.findClass("github.zimoyin.ffm") {
+     * true
+     * }
+     *
+     * @return 查找到的类
+     */
+    public static List<String> findClassAll(Filter filter) throws IOException {
+        return findClass(ClassALL, null, filter);
+    }
+
+    /**
+     * 查找所有class
+     *
+     * @return 查找到的类
+     */
     public static List<String> findClassAll() throws IOException {
-        return findClassAll(null);
+        return findClassAll((String) null);
+    }
+
+    /**
+     * 查找所有class
+     *
+     * @param jarPath jar 路径
+     * @return 查找到的类
+     */
+    public static List<String> findClassAll(String jarPath, Filter... filter) throws IOException {
+        return findClass(ClassALL, jarPath, filter);
+    }
+
+    /**
+     * 查找所有class
+     * <p>
+     * 支持kotlin调用
+     * ClassSeeker.findClass("github.zimoyin.ffm") {
+     * true
+     * }
+     *
+     * @param jarPath jar 路径
+     * @return 查找到的类
+     */
+    public static List<String> findClassAll(String jarPath, Filter filter) throws IOException {
+        return findClass(ClassALL, jarPath, filter);
     }
 
     /**
@@ -53,7 +101,7 @@ public final class ClassSeeker {
      * @return 查找到的类
      */
     public static List<String> findClass(@NonNull String packetOrClsName) throws IOException {
-        return findClass(packetOrClsName, null);
+        return findClass(packetOrClsName, null, (Filter) null);
     }
 
     /**
@@ -67,6 +115,16 @@ public final class ClassSeeker {
         return findClass(packetOrClsName, jarPath, (Filter) null);
     }
 
+    /**
+     * 查找指定的类或者包。提供提供的包或类的前缀进行搜索
+     *
+     * @param packetOrClsName 包名 或者类名
+     * @param filters         过滤器
+     * @return 查找到的类
+     */
+    public static List<String> findClass(@NonNull String packetOrClsName, Filter... filters) throws IOException {
+        return findClass(packetOrClsName, null, filters);
+    }
 
     /**
      * 查找指定的类或者包。提供提供的包或类的前缀进行搜索
@@ -92,6 +150,23 @@ public final class ClassSeeker {
 
         ClassReaderUtil.close(jarPath);
         return stream.collect(Collectors.toList());
+    }
+
+    /**
+     * 查找指定的类或者包。提供提供的包或类的前缀进行搜索
+     * <p>
+     * 支持kotlin 调用
+     * ClassSeeker.findClass("github.zimoyin.ffm") {
+     * true
+     * }
+     *
+     * @param packetOrClsName 包名 或者类名
+     * @param filter          过滤器
+     * @return 查找到的类
+     * @throws IOException
+     */
+    public static List<String> findClass(@NonNull String packetOrClsName, Filter filter) throws IOException {
+        return findClass(packetOrClsName, null, filter);
     }
 
     /**
@@ -126,9 +201,9 @@ public final class ClassSeeker {
         try {
             return ClassVsFactory.getClassVS(className, path);
         } catch (IOException e) {
-            if (AbnormalBlocking){
+            if (AbnormalBlocking) {
                 throw new RuntimeException(e);
-            }else {
+            } else {
                 e.printStackTrace();
             }
         }
