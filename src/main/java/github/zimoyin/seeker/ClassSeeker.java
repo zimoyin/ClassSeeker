@@ -199,7 +199,8 @@ public final class ClassSeeker {
 
     private static ClassVs buildClassVs(String className, String path) {
         try {
-            return ClassVsFactory.getClassVS(className, path);
+            if (path == null) return ClassVsFactory.getClassVS(className);
+            else return ClassVsFactory.getClassVS(className, path);
         } catch (IOException e) {
             if (AbnormalBlocking) {
                 throw new RuntimeException(e);

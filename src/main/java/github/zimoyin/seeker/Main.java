@@ -24,13 +24,13 @@ public class Main {
         FindClass.isLog = true;
         //TODO: 添加引用列表方法，返回类引用的所有的类
         long start = System.currentTimeMillis();
-        List<String> list = ClassSeeker.findClass("zimoyin.seeker", null, cls -> {
-//            try {
-//                System.out.println(cls);
-//                Class<?> instance = cls.newInstance();
-//            } catch (Exception e) {
-//                System.err.println(e.getMessage());
-//            }
+        List<String> list = ClassSeeker.findClass("github.zimoyin", null, cls -> {
+            try {
+                System.out.println(cls);
+                Class<?> instance = cls.newInstance();
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
             return true;
         });
 

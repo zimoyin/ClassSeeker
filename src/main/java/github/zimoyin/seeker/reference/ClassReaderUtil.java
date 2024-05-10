@@ -55,8 +55,7 @@ public class ClassReaderUtil {
         //如果没有在第三方Jar中就去标准库中找
         if (bytes == null || bytes.length == 0) {
             if (!isFindSTDClasses) throw new IOException("无法在路径下读取到class文件: " + className);
-            else
-                bytes = readStream(ClassLoader.getSystemResourceAsStream(className.replace('.', '/') + ".class"), true);
+            else bytes = readStream(ClassLoader.getSystemResourceAsStream(className.replace('.', '/') + ".class"), true);
         }
         //没有找到任何Class
         if (bytes == null || bytes.length == 0)
