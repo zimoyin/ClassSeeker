@@ -4,7 +4,6 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 
 # 入门指南
 
-注意可能你还需要ASM 9.0 的依赖  
 引入当前的依赖
 ```xml
 <repositories>
@@ -17,7 +16,7 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 <dependency>
     <groupId>com.github.zimoyin</groupId>
     <artifactId>ClassSeeker</artifactId>
-    <version>4e5f9c1739</version>
+    <version>976c26b16e</version>
 </dependency>
 ```
 
