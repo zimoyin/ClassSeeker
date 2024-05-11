@@ -141,7 +141,7 @@ public class FindClass {
             while (true) {
                 File[] files = clazzFile.listFiles();
                 if (files != null) for (File f1 : files) {
-                    if (f1.isFile()) break;
+                    if (f1.isFile()) continue;
                     if (f1.getName().equalsIgnoreCase("META-INF")) {
                         subPath = f1.getParentFile().getPath();
                         break;
