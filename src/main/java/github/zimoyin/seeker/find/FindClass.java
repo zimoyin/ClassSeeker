@@ -139,6 +139,7 @@ public class FindClass {
             String subPath = null;
             int count = 0;
             while (true) {
+                if (clazzFile == null) break;
                 File[] files = clazzFile.listFiles();
                 if (files != null) for (File f1 : files) {
                     if (f1.isFile()) continue;
