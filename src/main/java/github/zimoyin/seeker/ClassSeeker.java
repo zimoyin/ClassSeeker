@@ -32,6 +32,7 @@ public final class ClassSeeker {
      *
      * @return 查找到的类
      */
+    @Deprecated
     public static List<String> findClassAll(Filter... filter) throws IOException {
         return findClass(ClassALL, null, filter);
     }
@@ -65,6 +66,7 @@ public final class ClassSeeker {
      * @param jarPath jar 路径
      * @return 查找到的类
      */
+    @Deprecated
     public static List<String> findClassAll(String jarPath, Filter... filter) throws IOException {
         return findClass(ClassALL, jarPath, filter);
     }
@@ -122,6 +124,7 @@ public final class ClassSeeker {
      * @param filters         过滤器
      * @return 查找到的类
      */
+    @Deprecated
     public static List<String> findClass(@NonNull String packetOrClsName, Filter... filters) throws IOException {
         return findClass(packetOrClsName, null, filters);
     }
@@ -134,6 +137,7 @@ public final class ClassSeeker {
      * @param filters         过滤器
      * @return 查找到的类
      */
+    @Deprecated
     public static List<String> findClass(@NonNull String packetOrClsName, String jarPath, Filter... filters) throws IOException {
         List<String> list;
         //查找所有类
@@ -188,7 +192,10 @@ public final class ClassSeeker {
         if (jarPath != null) list = FindClass.getJarClassName(jarPath);
         else list = FindClass.getClazzNameForURL(packetOrClsName, true);
         //过滤符合要求的类
-        list = list.stream().filter(s -> s != null && !s.isEmpty()).filter(s -> s.startsWith(packetOrClsName)).collect(Collectors.toList());
+        list = list.stream()
+                .filter(s -> s != null && !s.isEmpty())
+                .filter(s -> s.startsWith(packetOrClsName))
+                .collect(Collectors.toList());
         //如果过滤器为null，则默认放行
         Stream<String> stream = list.stream().filter(Objects::nonNull).filter(s -> s.contains(packetOrClsName));
         if (filter != null) stream = stream.filter(s -> filter.test(buildClassVs(s, jarPath)));

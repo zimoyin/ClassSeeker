@@ -4,7 +4,6 @@ package github.zimoyin.seeker.find;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +34,7 @@ public class FindClass {
         try {
             Enumeration<URL> urls = Collections.enumeration(FindPackage.getClassPathToURLForApplication());
             result = getClazzName0(packageName, urls, showChildPackageFlag);
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return result;
@@ -70,39 +69,22 @@ public class FindClass {
      *
      * @return List集合，内容为类的全名
      */
-    private static List<String> getClazzName0(String packageName, Enumeration<URL> urls, boolean showChildPackageFlag) {
-        if (isLog) System.out.println("======================= 查找类 ===========================");
+    private static List<String> getClazzName0(String packageName, Enumeration<URL> urls, boolean showChildPackageFlag) throws IOException {
         List<String> result = new ArrayList<>();
-        if (isLog) System.out.println("查找 " + packageName + " 下的类，递归查找子文件: " + showChildPackageFlag);
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
-
-            if (isLog) System.out.println("查找 " + packageName + " 下的类(URL): " + url);
-
             if (url != null) {
                 //获取URL的协议，如果是class就是file协议，jar就是jar协议
                 String protocol = url.getProtocol();
                 if ("file".equals(protocol)) {
                     String path = url.getPath();//类路径
                     result.addAll(getAllClassNameByFile(new File(path), showChildPackageFlag));
-
-                    if (isLog)
-                        System.out.println("查找 " + packageName + " 下的类: " + getAllClassNameByFile(new File(path), showChildPackageFlag).size());
                 } else if ("jar".equals(protocol)) {
-                    if (packageName == null || packageName.trim().isEmpty())
-                        if (isLog)
-                            System.err.println("FindClass 扫描JAR时，packageName 不应该为null,否则有可能导致异常发送");
                     JarFile jarFile = null;
-                    try {
-                        jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    jarFile = ((JarURLConnection) url.openConnection()).getJarFile();
                     if (jarFile != null) {
                         result.addAll(getAllClassNameByJar(jarFile, packageName, showChildPackageFlag));
 
-                        if (isLog)
-                            System.out.println("查找 " + packageName + " 下(jar中)的类: " + getAllClassNameByJar(jarFile, packageName, showChildPackageFlag).size());
                         try {
                             jarFile.close();
                         } catch (IOException e) {
@@ -114,8 +96,6 @@ public class FindClass {
             }
         }
 
-        if (isLog) System.out.println("查找到的类数量： " + result.size());
-        if (isLog) System.out.println("======================= 查找类END ========================");
         return result;
     }
 
@@ -136,7 +116,7 @@ public class FindClass {
             addFiles(file, result);
         } else {
             File[] listFiles = file.listFiles();
-            if (listFiles != null && listFiles.length > 0) {
+            if (listFiles != null) {
                 for (File f : listFiles) {
                     if (flag) {
                         result.addAll(getAllClassNameByFile(f, true));
@@ -155,10 +135,29 @@ public class FindClass {
         String path = file.getPath();
         // 注意：这里替换文件分割符要用replace。因为replaceAll里面的参数是正则表达式,而windows环境中File.separator="\\"的,因此会有问题
         if (path.endsWith(CLASS_SUFFIX)) {
+            File clazzFile = new File(path);
+            String subPath = null;
+            int count = 0;
+            while (true) {
+                File[] files = clazzFile.listFiles();
+                if (files != null) for (File f1 : files) {
+                    if (f1.isFile()) break;
+                    if (f1.getName().equalsIgnoreCase("META-INF")) {
+                        subPath = f1.getParentFile().getPath();
+                        break;
+                    }
+                }
+                if (subPath != null || count >= 12) break;
+                clazzFile = clazzFile.getParentFile();
+                count = count + 1;
+            }
+
             path = path.replace(CLASS_SUFFIX, "");
             // 从"/classes/"后面开始截取
-            String clazzName = path.substring(path.indexOf(CLASS_FILE_PREFIX) + CLASS_FILE_PREFIX.length())
-                    .replace(File.separator, PACKAGE_SEPARATOR);
+            String clazzName = "";
+            if (subPath == null) clazzName = path.substring(path.indexOf(CLASS_FILE_PREFIX) + CLASS_FILE_PREFIX.length()).replace(File.separator, PACKAGE_SEPARATOR);
+            else clazzName = path.substring(subPath.length() + 1).replace(File.separator, PACKAGE_SEPARATOR);
+
             if (!clazzName.contains("$")) {
                 result.add(clazzName);
             }
