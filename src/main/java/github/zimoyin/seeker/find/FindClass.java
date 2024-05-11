@@ -154,10 +154,17 @@ public class FindClass {
 
             path = path.replace(CLASS_SUFFIX, "");
             // 从"/classes/"后面开始截取
-            String clazzName = "";
-            if (subPath == null) clazzName = path.substring(path.indexOf(CLASS_FILE_PREFIX) + CLASS_FILE_PREFIX.length()).replace(File.separator, PACKAGE_SEPARATOR);
-            else clazzName = path.substring(subPath.length() + 1).replace(File.separator, PACKAGE_SEPARATOR);
+            String clazzName;
+            if (subPath == null && path.contains(CLASS_FILE_PREFIX)) {
+                clazzName = path.substring(path.indexOf(CLASS_FILE_PREFIX) + CLASS_FILE_PREFIX.length());
+            } else if (subPath != null) {
+                clazzName = path.substring(subPath.length() + 1);
+            } else {
+                clazzName = path.substring(path.lastIndexOf(File.separator) + 1);
+            }
 
+
+            clazzName = clazzName.replace(File.separator, PACKAGE_SEPARATOR);
             if (!clazzName.contains("$")) {
                 result.add(clazzName);
             }
