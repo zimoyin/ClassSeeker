@@ -16,7 +16,7 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 <dependency>
     <groupId>com.github.zimoyin</groupId>
     <artifactId>ClassSeeker</artifactId>
-    <version>976c26b16e</version>
+    <version>0.0.1</version>
 </dependency>
 ```
 
