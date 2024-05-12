@@ -83,7 +83,7 @@ public class FieldVs extends GeneralImpl implements GeneralField {
 
     @Override
     public AnnotationVs getAnnotations(Class<?> av) {
-        String name = av.getSimpleName();
+        String name = av.getName();
         return AnnotationsSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
     }
 

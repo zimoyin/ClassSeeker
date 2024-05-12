@@ -92,7 +92,7 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
 
     @Override
     public AnnotationVs getAnnotations(Class<?> av) {
-        String name = av.getSimpleName();
+        String name = av.getName();
         return AnnotationNameSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
     }
 
