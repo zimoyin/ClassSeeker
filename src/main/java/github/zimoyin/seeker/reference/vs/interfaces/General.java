@@ -1,5 +1,7 @@
 package github.zimoyin.seeker.reference.vs.interfaces;
 
+import github.zimoyin.seeker.reference.vs.visitor.AnnotationVs;
+
 import java.util.ArrayList;
 
 public interface General {
@@ -31,14 +33,30 @@ public interface General {
     /**
      * 获取所有注解
      */
-    public String[] getAnnotations();
+    public AnnotationVs[] getAnnotations();
+
+    /**
+     * 获取注解
+     */
+    public AnnotationVs getAnnotations(String name);
+
+    /**
+     * 获取注解
+     */
+    public AnnotationVs getAnnotations(AnnotationVs av);
+
+    /**
+     * 获取注解
+     */
+    public AnnotationVs getAnnotations(Class<?> av);
 
     /**
      * 是否存在该注解
      *
      * @param annotation 注解全限定名
      */
-    public boolean isAnnotation(String annotation);
+    public boolean isContainAnnotation(String annotation);
+
 
     /**
      * 获取在当前域中的引用对象

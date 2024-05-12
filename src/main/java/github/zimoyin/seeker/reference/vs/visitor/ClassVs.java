@@ -20,7 +20,7 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     private final String ClassNameSource;
     private final String SuperClassNameSource;
     private final String[] InterfacesSource;
-    private final ArrayList<String> AnnotationNameSource = new ArrayList<String>();
+    private final ArrayList<AnnotationVs> AnnotationNameSource = new ArrayList<>();
     private final ArrayList<FieldVs> Fields = new ArrayList<>();
     private final ArrayList<MethodVs> Methods = new ArrayList<>();
     private Modifier ModifierValue;
@@ -76,18 +76,34 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     }
 
     @Override
-    public String[] getAnnotations() {
-        return AnnotationNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
+    public AnnotationVs[] getAnnotations() {
+        return AnnotationNameSource.toArray(new AnnotationVs[0]);
+    }
+
+    @Override
+    public AnnotationVs getAnnotations(String name) {
+        return AnnotationNameSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public AnnotationVs getAnnotations(AnnotationVs av) {
+        return AnnotationNameSource.stream().filter(s -> s.equals(av)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public AnnotationVs getAnnotations(Class<?> av) {
+        String name = av.getSimpleName();
+        return AnnotationNameSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
     }
 
 
     @Override
-    public boolean isAnnotation(String annotation) {
+    public boolean isContainAnnotation(String annotation) {
         return getAnnotation(annotation) != null;
     }
 
-    public String getAnnotation(String annotation) {
-        return Arrays.stream(getAnnotations()).filter(s -> s.equals(annotation)).distinct().findFirst().orElse(null);
+    public AnnotationVs getAnnotation(String annotation) {
+        return Arrays.stream(getAnnotations()).filter(s -> s.getName().equals(annotation)).distinct().findFirst().orElse(null);
     }
 
     @Override
@@ -281,7 +297,7 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
     @Override
     public ArrayList<String> getReferences() {
         ArrayList<String> refs = new ArrayList<String>();
-        String[] annotations = getAnnotations();
+        String[] annotations = Arrays.stream(getAnnotations()).map(AnnotationVs::getName).toArray(String[]::new);
         List<String> fieldRef = new ArrayList<>();
         for (GeneralField generalField : getFields()) {
             ArrayList<String> fieldReferences = generalField.getReferences();
@@ -313,7 +329,7 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    protected void setAnnotationNameSource(String annotationName) {
+    protected void setAnnotationNameSource(AnnotationVs annotationName) {
         this.AnnotationNameSource.add(annotationName);
     }
 

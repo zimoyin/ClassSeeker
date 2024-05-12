@@ -4,7 +4,7 @@ import lombok.val;
 import org.objectweb.asm.*;
 
 class VisitorMethod extends MethodVisitor {
-//MethodVisitor 下的 visitLocalVariable 方法
+    //MethodVisitor 下的 visitLocalVariable 方法
     private final MethodVs method;
 
     public VisitorMethod(MethodVs methodVs) {
@@ -12,20 +12,22 @@ class VisitorMethod extends MethodVisitor {
         this.method = methodVs;
     }
 
+
     //方法上的注解
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         val annName = desc.substring(1);
-        method.setAnnotation(annName);
-        return super.visitAnnotation(desc, visible);
+        AnnotationVs annotationVs = new AnnotationVs(desc, visible);
+        method.setAnnotation(annotationVs);
+        return new VisitorAnnotation(annotationVs);
     }
 
     //方法参数上的注解
     @Override
     public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
-        String para = desc.substring(1);
-        method.setParameterAnnotation(para);
-        return super.visitParameterAnnotation(parameter, desc, visible);
+        AnnotationVs vs = new AnnotationVs(desc, visible);
+        method.addParameterAnnotation(parameter, vs);
+        return new VisitorAnnotation(vs);
     }
 
     //方法内部的变量
@@ -36,7 +38,7 @@ class VisitorMethod extends MethodVisitor {
         if (className.contains("[]")) className += "&array";
         String value = className.replaceAll("[\\[|\\]]", "");
 //        if (method.getName().equals("main")) {
-//            System.err.println(index + ": " + name + " = " + value);
+//            System.err.prin tln(index + ": " + name + " = " + value);
 //        }
         //如果变量是this
         if (index == 0 && name.equals("this")) {
@@ -48,11 +50,13 @@ class VisitorMethod extends MethodVisitor {
         if (method.isStatic()) {
             if (index >= 0 && index < paramSize) {
                 method.getParameterNameSourceMap().put(name, value);
+                method.getParameterNameSourceIndexMap().put(name, index);
                 return;
             }
         } else {
             if (index > 0 && index <= paramSize) {
                 method.getParameterNameSourceMap().put(name, value);
+                method.getParameterNameSourceIndexMap().put(name, index-1);
                 return;
             }
         }

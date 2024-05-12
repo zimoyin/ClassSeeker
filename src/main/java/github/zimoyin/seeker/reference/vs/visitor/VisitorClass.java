@@ -60,9 +60,9 @@ public class VisitorClass extends ClassVisitor {
      */
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        String annotationName = desc.substring(1);
-        ClassVsInstance.setAnnotationNameSource(annotationName);
-        return super.visitAnnotation(desc, visible);
+        AnnotationVs vs = new AnnotationVs(desc, visible);
+        ClassVsInstance.setAnnotationNameSource(vs);
+        return new VisitorAnnotation(vs);
     }
 
     //类的字段

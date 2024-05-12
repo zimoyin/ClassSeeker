@@ -8,17 +8,33 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class MethodVs extends GeneralImpl implements GeneralMethod {
     private final String MethodName;
     private final String MethodDescription;
     private String ReturnTypeNameSource;
+    /**
+     * 方法参数列表源类型
+     */
     private final ArrayList<String> ParameterTypeNameSource = new ArrayList<String>();
+    /**
+     * 方法参数列表源名称
+     */
     private final HashMap<String, String> ParameterNameSourceMap = new HashMap<>();
+    /**
+     * 方法参数列表源注解
+     * 参数name，索引
+     */
+    private final HashMap<String, Integer> ParameterNameSourceIndexMap = new HashMap<>();
+    /**
+     * 方法参数列表源注解
+     * 索引，注解
+     */
+    private final HashMap<Integer, ArrayList<AnnotationVs>> ParameterAnnotationVsMap = new HashMap<>();
     private final ArrayList<String> ThrowExceptionNameSource = new ArrayList<>();
-    private final ArrayList<String> AnnotationNameSource = new ArrayList<>();
-    private final ArrayList<String> ParameterAnnotationNameSource = new ArrayList<>();
+    private final ArrayList<AnnotationVs> AnnotationsSource = new ArrayList<>();
     private final HashMap<String, String> LocalVariableNameSource = new HashMap<>();
     private Modifier ModifierValue;
     private boolean isStatic;
@@ -46,10 +62,10 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
         buffer.append(getThisClassName()).append(".");
         buffer.append(getName());
         buffer.append("(");
-        if (ParameterTypeNameSource.size() > 0)
+        if (!ParameterTypeNameSource.isEmpty())
             buffer.append(Arrays.toString(getParameterTypes()), 1, Arrays.toString(getParameterTypes()).length() - 1);
         buffer.append(")").append(" ");
-        if (ThrowExceptionNameSource.size() > 0) buffer
+        if (!ThrowExceptionNameSource.isEmpty()) buffer
                 .append("throws")
                 .append(" ")
                 .append(Arrays.toString(getThrowExceptions()), 1, Arrays.toString(getThrowExceptions()).length() - 1);
@@ -83,13 +99,29 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     }
 
     @Override
-    public String[] getAnnotations() {
-        return AnnotationNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
+    public AnnotationVs[] getAnnotations() {
+        return AnnotationsSource.toArray(AnnotationVs[]::new);
     }
 
     @Override
-    public boolean isAnnotation(String annotation) {
-        return Arrays.asList(getAnnotations()).contains(annotation);
+    public AnnotationVs getAnnotations(String name) {
+        return AnnotationsSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public AnnotationVs getAnnotations(AnnotationVs av) {
+        return AnnotationsSource.stream().filter(s -> s.equals(av)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public AnnotationVs getAnnotations(Class<?> av) {
+        String name = av.getSimpleName();
+        return AnnotationsSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public boolean isContainAnnotation(String annotation) {
+        return Arrays.stream(getAnnotations()).map(AnnotationVs::getName).collect(Collectors.toList()).contains(annotation);
     }
 
     @Override
@@ -105,7 +137,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
 //            System.err.println(localVar.getName()+": "+localVar.getType());
         }
 
-        refs.addAll(List.of(getAnnotations()));
+        refs.addAll(List.of(Arrays.stream(getAnnotations()).map(AnnotationVs::getName).toArray(String[]::new)));
         refs.addAll(List.of(getTryExceptions()));
         refs.addAll(List.of(getThrowExceptions()));
         return refs;
@@ -132,8 +164,16 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     public GeneralMethodParameter[] getParameters() {
 //        parameterSafe();
         ArrayList<GeneralMethodParameter> parameters = new ArrayList<>();
-        ParameterNameSourceMap.forEach((s, s2) -> parameters.add(new MethodLocalVariableVs(s, s2, ParameterAnnotationNameSource)));
+        ParameterNameSourceMap.forEach((s, s2) -> {
+            Integer index = ParameterNameSourceIndexMap.get(s);
+            ArrayList<AnnotationVs> vsArrayList = ParameterAnnotationVsMap.get(index);
+            parameters.add(new MethodLocalVariableVs(s, s2, vsArrayList));
+        });
         return parameters.toArray(new GeneralMethodParameter[0]);
+    }
+
+    protected void addParameterAnnotation(int index, AnnotationVs annotationVs){
+        ParameterAnnotationVsMap.computeIfAbsent(index, k -> new ArrayList<>()).add(annotationVs);
     }
 
     /**
@@ -179,6 +219,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
         return variables.toArray(new GeneralMethodParameter[0]);
     }
 
+
     @Override
     public String getThisClassName() {
         return className == null ? thisClass.getName() : className;
@@ -201,13 +242,10 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
         this.ThrowExceptionNameSource.add(exceptionName);
     }
 
-    protected void setAnnotation(String annName) {
-        this.AnnotationNameSource.add(annName);
+    protected void setAnnotation(AnnotationVs annName) {
+        this.AnnotationsSource.add(annName);
     }
 
-    protected void setParameterAnnotation(String para) {
-        this.ParameterAnnotationNameSource.add(para);
-    }
 
     protected void setLocalVariable(String name, String value) {
         this.LocalVariableNameSource.put(name, value);

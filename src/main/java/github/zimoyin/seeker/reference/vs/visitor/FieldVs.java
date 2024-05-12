@@ -6,12 +6,13 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class FieldVs extends GeneralImpl implements GeneralField {
     private final String FieldName;
     private final String FieldTypeNameSource;
-    private final ArrayList<String> AnnotationNameSource = new ArrayList<String>();
+    private final ArrayList<AnnotationVs> AnnotationsSource = new ArrayList<>();
     private Modifier ModifierValue;
     private boolean isStatic;
     private boolean isFinal;
@@ -65,13 +66,31 @@ public class FieldVs extends GeneralImpl implements GeneralField {
     }
 
     @Override
-    public String[] getAnnotations() {
-        return AnnotationNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
+    public AnnotationVs[] getAnnotations() {
+        return AnnotationsSource.toArray(new AnnotationVs[0]);
+    }
+
+
+    @Override
+    public AnnotationVs getAnnotations(String name) {
+        return AnnotationsSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
     }
 
     @Override
-    public boolean isAnnotation(String annotation) {
-        return Arrays.asList(getAnnotations()).contains(annotation);
+    public AnnotationVs getAnnotations(AnnotationVs av) {
+        return AnnotationsSource.stream().filter(s -> s.equals(av)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public AnnotationVs getAnnotations(Class<?> av) {
+        String name = av.getSimpleName();
+        return AnnotationsSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public boolean isContainAnnotation(String annotation) {
+        return Arrays.stream(getAnnotations()).map(AnnotationVs::getName).collect(Collectors.toList()).contains(annotation);
+
     }
 
     @Override
@@ -80,7 +99,7 @@ public class FieldVs extends GeneralImpl implements GeneralField {
         String ref = getType().replaceAll("[\\[|\\]]", "");
         ref = ref.replaceAll("[\\[|\\]]", "");
         refs.add(ref);
-        refs.addAll(List.of(getAnnotations()));
+        refs.addAll(List.of(Arrays.stream(getAnnotations()).map(AnnotationVs::getName).toArray(String[]::new)));
         return refs;
     }
 
@@ -94,8 +113,8 @@ public class FieldVs extends GeneralImpl implements GeneralField {
         return getTypeClassNameGI(FieldTypeNameSource);
     }
 
-    protected void setAnnotation(String descriptor) {
-        this.AnnotationNameSource.add(descriptor);
+    protected void setAnnotation(AnnotationVs vs) {
+        this.AnnotationsSource.add(vs);
     }
 
     protected void setModifier(Modifier modifier) {

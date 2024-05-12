@@ -39,7 +39,7 @@ public interface GeneralClass extends General {
      * 是否存在指定的注解
      * @param annotation 注解全限定名
      */
-    public boolean isAnnotation(String annotation);
+    public boolean isContainAnnotation(String annotation);
     /**
      * 父类的名称
      */

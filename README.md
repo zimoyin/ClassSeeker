@@ -59,3 +59,5 @@ ClassSeeker.ClassALL 包名或者类名的常量形式，使用该常量会扫�
 ```java
 ClassVs classVS = ClassVsFactory.getClassVS(Main.class);
 ```
+
+6. [ClassVsFactory.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fseeker%2Freference%2FClassVsFactory.java) 可以直接生产一个ClassVs对象，不需要手动创建
