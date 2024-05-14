@@ -4,6 +4,7 @@ import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethod;
 import github.zimoyin.seeker.reference.vs.interfaces.GeneralMethodParameter;
 import lombok.Getter;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -218,6 +219,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
         LocalVariableNameSource.forEach((s, s2) -> variables.add(new MethodLocalVariableVs(s, s2)));
         return variables.toArray(new GeneralMethodParameter[0]);
     }
+
 
 
     @Override

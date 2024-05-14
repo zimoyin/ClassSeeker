@@ -1,7 +1,8 @@
 package github.zimoyin.seeker.reference.vs.interfaces;
 
-import github.zimoyin.seeker.reference.vs.visitor.AnnotationVs;
 import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
+
+import java.lang.reflect.Method;
 
 public interface GeneralMethod extends General {
     /**
@@ -46,5 +47,6 @@ public interface GeneralMethod extends General {
      * 变量的作用域必须是在整个方法内，如果是在方法内的一个域变量则不能被获取，如if/for/while...内定义的变量
      */
     public GeneralMethodParameter[] getLocalVariable();
+
 
 }

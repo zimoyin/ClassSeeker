@@ -13,7 +13,11 @@ import java.util.Objects;
 
 @Deprecated
 public class Main2 {
-    public static void main(String[] args) throws IOException, NoSuchFieldException {
+    public static void main(String[] args) throws IOException, NoSuchFieldException, ClassNotFoundException {
+//        Class<?> anInt = Class.forName("int");
+//        System.out.println(anInt);
+        Class<Integer> aClass = int.class;
+
         @TestAnnotation ClassVs classVS = ClassVsFactory.getClassVS(Main2.class);
         for (GeneralMethod method : classVS.getMethods()) {
             if (!Objects.equals(method.getName(), "a")) continue;
@@ -31,7 +35,7 @@ public class Main2 {
     }
 
     @TestAnnotation(value = "aga")
-    public void a(String s, @TestAnnotation String a) {
+    public void a(String s, @TestAnnotation String a,int aaa) {
        @TestAnnotation int aa = 1;
     }
 

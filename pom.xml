@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>9.4</version>
+            <version>9.7</version>
             <!--<version>5.0</version>-->
             <!-- 编译时会引入依赖，打包是不引入依赖 -->
             <!--<scope>provided</scope>-->
