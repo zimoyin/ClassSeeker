@@ -2,6 +2,10 @@ package github.zimoyin.seeker.reference.vs.visitor;
 
 import org.objectweb.asm.*;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * 类引用分析
@@ -88,8 +92,19 @@ public class VisitorClass extends ClassVisitor {
         fieldVs.setFinal(isFinal);
         fieldVs.setVolatile(isVolatile);
 
+        // 解析泛型
+        if (signature != null) {
+            GenericType[] types = GenericType.getGenericTypes(signature);
+            for (GenericType genericType : types) {
+                fieldVs.setGenericType(genericType);
+            }
+        }
+
         return new VisitorAnnotationField(fieldVs);
     }
+
+
+
 
     //获取可见程度
     private static Modifier getModifier(int access) {

@@ -2,9 +2,7 @@ package github.zimoyin.seeker.reference.vs.visitor;
 
 import lombok.Getter;
 import lombok.val;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 
 @Getter
 class VisitorAnnotationField extends FieldVisitor {
@@ -20,5 +18,17 @@ class VisitorAnnotationField extends FieldVisitor {
         AnnotationVs annotationVs = new AnnotationVs(descriptor, visible);
         field.setAnnotation(annotationVs);
         return new VisitorAnnotation(annotationVs);
+    }
+
+    @Override
+    public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible) {
+        AnnotationVs annotationVs = new AnnotationVs(descriptor, visible);
+        field.setTypeAnnotation(annotationVs);
+        return new VisitorAnnotation(annotationVs);
+    }
+
+    @Override
+    public void visitAttribute(Attribute attribute) {
+        super.visitAttribute(attribute);
     }
 }

@@ -13,6 +13,8 @@ public class FieldVs extends GeneralImpl implements GeneralField {
     private final String FieldName;
     private final String FieldTypeNameSource;
     private final ArrayList<AnnotationVs> AnnotationsSource = new ArrayList<>();
+    private final ArrayList<AnnotationVs> TypeAnnotationsSources = new ArrayList<>();
+    private final ArrayList<GenericType> GenericTypeSource = new ArrayList<>();
     private Modifier ModifierValue;
     private boolean isStatic;
     private boolean isFinal;
@@ -53,6 +55,41 @@ public class FieldVs extends GeneralImpl implements GeneralField {
     @Override
     public boolean isVolatile() {
         return isVolatile;
+    }
+
+    @Override
+    public AnnotationVs[] getGenericAnnotations() {
+        return TypeAnnotationsSources.toArray(new AnnotationVs[0]);
+    }
+
+    @Override
+    public AnnotationVs getGenericAnnotation(String clsName) {
+        return TypeAnnotationsSources.stream().filter(s -> s.getName().equals(clsName)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public AnnotationVs getGenericAnnotation(AnnotationVs av) {
+        return TypeAnnotationsSources.stream().filter(s -> s.equals(av)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public AnnotationVs getGenericAnnotation(int index) {
+        return TypeAnnotationsSources.get(index);
+    }
+
+    @Override
+    public GenericType getGenericType(String clsName) {
+        return GenericTypeSource.stream().filter(s -> s.getType().getClassName().equals(clsName)).distinct().findFirst().orElse(null);
+    }
+
+    @Override
+    public GenericType getGenericType(int index) {
+        return GenericTypeSource.get(index);
+    }
+
+    @Override
+    public GenericType[] getGenericTypes() {
+        return GenericTypeSource.toArray(GenericType[]::new);
     }
 
     @Override
@@ -115,6 +152,14 @@ public class FieldVs extends GeneralImpl implements GeneralField {
 
     protected void setAnnotation(AnnotationVs vs) {
         this.AnnotationsSource.add(vs);
+    }
+
+
+    protected void setTypeAnnotation(AnnotationVs vs) {
+        this.TypeAnnotationsSources.add(vs);
+    }
+    protected void setGenericType(GenericType vs) {
+        this.GenericTypeSource.add(vs);
     }
 
     protected void setModifier(Modifier modifier) {

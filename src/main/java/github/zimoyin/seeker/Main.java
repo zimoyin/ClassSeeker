@@ -1,15 +1,14 @@
 package github.zimoyin.seeker;
 
 import github.zimoyin.seeker.find.FindClass;
-import github.zimoyin.seeker.reference.ClassVsFactory;
-import github.zimoyin.seeker.reference.vs.interfaces.GeneralClass;
-import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
+import github.zimoyin.seeker.reference.vs.interfaces.GeneralField;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @Deprecated
 public class Main {
@@ -20,23 +19,25 @@ public class Main {
     private int[] b;
 
     @Deprecated
+    private Map<@NonNull List<List<String>>, @NonNull String[]> c;
+
+    @Deprecated
     public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException {
         FindClass.isLog = true;
         //TODO: 添加引用列表方法，返回类引用的所有的类
         long start = System.currentTimeMillis();
-        List<String> list = ClassSeeker.findClass("github.zimoyin", null, cls -> {
+        List<String> list = ClassSeeker.findClass("github.zimoyin.seeker.Main", null, cls -> {
             try {
+                if (!cls.isClass("github.zimoyin.seeker.Main")) return false;
                 System.out.println(cls);
-                Class<?> instance = cls.newInstance();
+                GeneralField c1 = cls.getFieldByName("c");
+                System.out.println(c1);
+                System.out.println(Arrays.toString(c1.getGenericAnnotations()));
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
             return true;
         });
-
-        for (String s : list) {
-            System.out.println(s);
-        }
 
         System.out.println();
         System.out.println("class size: "+list.size());

@@ -293,6 +293,11 @@ public final class ClassVs extends GeneralImpl implements GeneralClass {
         return isEnum;
     }
 
+    @Override
+    public boolean isClass(String s) {
+        return this.getName().equals(s);
+    }
+
 
     @Override
     public ArrayList<String> getReferences() {

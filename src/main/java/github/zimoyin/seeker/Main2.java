@@ -34,15 +34,15 @@ public class Main2 {
         }
     }
 
+    //TODO 未能实现泛型
     @TestAnnotation(value = "aga")
-    public void a(String s, @TestAnnotation String a,int aaa) {
+    public<String> void a(String s, @TestAnnotation String a,int aaa) {
        @TestAnnotation int aa = 1;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface TestAnnotation {
+    public  @interface TestAnnotation {
         String[] value() default "a";
-
     }
 
 }

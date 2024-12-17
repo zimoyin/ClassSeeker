@@ -153,4 +153,5 @@ public interface GeneralClass extends General {
     public boolean isEnum();
 
 
+    boolean isClass(String s);
 }
