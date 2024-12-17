@@ -163,8 +163,11 @@ public class VisitorClass extends ClassVisitor {
         methodVs.setStatic(isStatic);
         methodVs.setFinal(isFinal);
         methodVs.setSignature(signature);
-        if (signature != null) for (GenericType genericType : GenericType.getGenericTypes(signature)) {
-            methodVs.setGenericType(genericType);
+        if (signature != null) {
+            GenericType[] types = GenericType.getGenericTypes(signature);
+            if (types !=null)for (GenericType genericType : GenericType.getGenericTypes(signature)) {
+                methodVs.setGenericType(genericType);
+            }
         }
         return new VisitorMethod(methodVs);
     }

@@ -26,13 +26,9 @@ public class Main {
         FindClass.isLog = true;
         //TODO: 添加引用列表方法，返回类引用的所有的类
         long start = System.currentTimeMillis();
-        List<String> list = ClassSeeker.findClass("github.zimoyin.seeker.Main", null, cls -> {
+        List<String> list = ClassSeeker.findClass(ClassSeeker.ClassALL, null, cls -> {
             try {
-                if (!cls.isClass("github.zimoyin.seeker.Main")) return false;
                 System.out.println(cls);
-                GeneralField c1 = cls.getFieldByName("c");
-                System.out.println(c1);
-                System.out.println(Arrays.toString(c1.getGenericAnnotations()));
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }

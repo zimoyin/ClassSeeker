@@ -57,6 +57,8 @@ public class GenericType {
         for (String description : descriptions) {
             list.add(new GenericType(description));
         }
+        GenericType[] aa = list.toArray(GenericType[]::new);
+
         return list.toArray(GenericType[]::new);
     }
 
