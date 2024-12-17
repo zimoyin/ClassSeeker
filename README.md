@@ -1,6 +1,7 @@
 # ClassSeeker
 
 ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库对Java类进行分析。它可以帮助你识别一个特定类所继承的类，以及该类中存在的方法和字段等。
+该工具主要解决，在扫描第三方Jar 时，检测是否缺少类
 
 # 入门指南
 
@@ -16,7 +17,7 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 <dependency>
     <groupId>com.github.zimoyin</groupId>
     <artifactId>ClassSeeker</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
