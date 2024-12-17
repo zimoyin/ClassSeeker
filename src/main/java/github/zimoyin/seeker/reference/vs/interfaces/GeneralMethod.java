@@ -1,6 +1,7 @@
 package github.zimoyin.seeker.reference.vs.interfaces;
 
 import github.zimoyin.seeker.reference.vs.visitor.ClassVs;
+import github.zimoyin.seeker.reference.vs.visitor.GenericType;
 
 import java.lang.reflect.Method;
 
@@ -48,5 +49,8 @@ public interface GeneralMethod extends General {
      */
     public GeneralMethodParameter[] getLocalVariable();
 
+    String getSignature();
 
+    GenericType[] getGenericTypes();
+    GenericType getGenericType(int index);
 }

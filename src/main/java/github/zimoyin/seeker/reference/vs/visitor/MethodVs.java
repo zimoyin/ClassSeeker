@@ -16,6 +16,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     private final String MethodName;
     private final String MethodDescription;
     private String ReturnTypeNameSource;
+    private String signature0;
     /**
      * 方法参数列表源类型
      */
@@ -37,6 +38,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     private final ArrayList<String> ThrowExceptionNameSource = new ArrayList<>();
     private final ArrayList<AnnotationVs> AnnotationsSource = new ArrayList<>();
     private final HashMap<String, String> LocalVariableNameSource = new HashMap<>();
+    protected ArrayList<GenericType> GenericTypeSources = new ArrayList<>();
     private Modifier ModifierValue;
     private boolean isStatic;
     private boolean isFinal;
@@ -173,7 +175,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
         return parameters.toArray(new GeneralMethodParameter[0]);
     }
 
-    protected void addParameterAnnotation(int index, AnnotationVs annotationVs){
+    protected void addParameterAnnotation(int index, AnnotationVs annotationVs) {
         ParameterAnnotationVsMap.computeIfAbsent(index, k -> new ArrayList<>()).add(annotationVs);
     }
 
@@ -219,7 +221,6 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
         LocalVariableNameSource.forEach((s, s2) -> variables.add(new MethodLocalVariableVs(s, s2)));
         return variables.toArray(new GeneralMethodParameter[0]);
     }
-
 
 
     @Override
@@ -283,5 +284,28 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
 
     protected void setThisClass(ClassVs classVsInstance) {
         this.thisClass = classVsInstance;
+    }
+
+    protected void setSignature(String signature) {
+        signature0 = signature;
+    }
+
+    @Override
+    public String getSignature() {
+        return signature0;
+    }
+
+    @Override
+    public GenericType[] getGenericTypes() {
+        return GenericTypeSources.toArray(GenericType[]::new);
+    }
+
+    @Override
+    public GenericType getGenericType(int index) {
+        return GenericTypeSources.get(index);
+    }
+
+    protected void setGenericType(GenericType genericType) {
+        GenericTypeSources.add(genericType);
     }
 }

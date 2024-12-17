@@ -1,5 +1,7 @@
 package github.zimoyin.seeker.reference.vs.interfaces;
 
+import github.zimoyin.seeker.reference.vs.visitor.FieldVs;
+
 import java.io.IOException;
 
 public interface GeneralClass extends General {
@@ -154,4 +156,5 @@ public interface GeneralClass extends General {
 
 
     boolean isClass(String s);
+
 }

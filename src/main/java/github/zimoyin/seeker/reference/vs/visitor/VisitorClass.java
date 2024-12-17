@@ -3,6 +3,7 @@ package github.zimoyin.seeker.reference.vs.visitor;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,8 +105,6 @@ public class VisitorClass extends ClassVisitor {
     }
 
 
-
-
     //获取可见程度
     private static Modifier getModifier(int access) {
         if ((access & Opcodes.ACC_PUBLIC) != 0) {
@@ -163,6 +162,10 @@ public class VisitorClass extends ClassVisitor {
         methodVs.setNative(isNative);
         methodVs.setStatic(isStatic);
         methodVs.setFinal(isFinal);
+        methodVs.setSignature(signature);
+        if (signature != null) for (GenericType genericType : GenericType.getGenericTypes(signature)) {
+            methodVs.setGenericType(genericType);
+        }
         return new VisitorMethod(methodVs);
     }
 

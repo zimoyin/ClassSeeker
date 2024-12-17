@@ -77,7 +77,7 @@ public class GenericType {
                 depth--;
                 if (depth < 0) depth = 0;
             }
-            builder.append(c);
+            if (isStart) builder.append(c);
             if (c == '[') {
                 isStart = true;
                 builder.append(input.charAt(++i));
@@ -87,6 +87,6 @@ public class GenericType {
                 builder = new StringBuilder();
             }
         }
-        return lines.toArray(new String[0]);
+        return lines.stream().filter(s -> !s.isEmpty()).toArray(String[]::new);
     }
 }
