@@ -15,7 +15,7 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 </repositories>
 
 <dependency>
-    <groupId>com.github.zimoyin</groupId>
+    <groupId>com.com.github.zimoyin</groupId>
     <artifactId>ClassSeeker</artifactId>
     <version>0.0.4</version>
 </dependency>
@@ -27,14 +27,14 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 所有的操作都从该类进行
 
 ```java
-import github.zimoyin.seeker.ClassSeeker
+
 ```
 
 2. 接着你需要了解你需要的方法。该类通过了两个方法，以及部分重载。  
 **注意：扫描器不会扫描标准库中的类,如果你在你的项目里面运行的话**
 
 ```java
-ClassSeeker.findClass(...); // 查找指定的类，或者具有指定前缀的类，如 github.zimoyin 会查找该包下所有类
+ClassSeeker.findClass(...); // 查找指定的类，或者具有指定前缀的类，如 com.github.zimoyin 会查找该包下所有类
 ClassSeeker.findClassAll(...); // 返回所有的类
 ```
 
