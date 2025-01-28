@@ -7,17 +7,10 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 
 引入当前的依赖
 ```xml
-<repositories>
-  <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-  </repository>
-</repositories>
-
 <dependency>
     <groupId>com.com.github.zimoyin</groupId>
     <artifactId>ClassSeeker</artifactId>
-    <version>0.0.4</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
