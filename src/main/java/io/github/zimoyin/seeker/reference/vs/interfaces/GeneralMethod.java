@@ -49,6 +49,9 @@ public interface GeneralMethod extends General {
 
     String getSignature();
 
+    /**
+     * @return 方法上的泛型
+     */
     GenericType[] getGenericTypes();
     GenericType getGenericType(int index);
 }

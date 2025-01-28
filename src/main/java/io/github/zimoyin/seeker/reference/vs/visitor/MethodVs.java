@@ -4,10 +4,7 @@ import io.github.zimoyin.seeker.reference.vs.interfaces.GeneralMethod;
 import io.github.zimoyin.seeker.reference.vs.interfaces.GeneralMethodParameter;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -102,7 +99,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
 
     @Override
     public AnnotationVs[] getAnnotations() {
-        return AnnotationsSource.toArray(AnnotationVs[]::new);
+        return AnnotationsSource.stream().filter(Objects::nonNull).toArray(AnnotationVs[]::new);
     }
 
     @Override
@@ -118,12 +115,12 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     @Override
     public AnnotationVs getAnnotations(Class<?> av) {
         String name = av.getName();
-        return AnnotationsSource.stream().filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
+        return AnnotationsSource.stream().filter(Objects::nonNull).filter(s -> s.getName().equals(name)).distinct().findFirst().orElse(null);
     }
 
     @Override
     public boolean isContainAnnotation(String annotation) {
-        return Arrays.stream(getAnnotations()).map(AnnotationVs::getName).collect(Collectors.toList()).contains(annotation);
+        return Arrays.stream(getAnnotations()).filter(Objects::nonNull).map(AnnotationVs::getName).collect(Collectors.toList()).contains(annotation);
     }
 
     @Override
@@ -159,7 +156,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     @Override
     public String[] getParameterTypes() {
 //        parameterSafe();
-        return ParameterTypeNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
+        return ParameterTypeNameSource.stream().filter(Objects::nonNull).map(this::getTypeClassNameGI).toArray(String[]::new);
     }
 
     @Override
@@ -206,12 +203,12 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
 
     @Override
     public String[] getThrowExceptions() {
-        return ThrowExceptionNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
+        return ThrowExceptionNameSource.stream().filter(Objects::nonNull).map(this::getTypeClassNameGI).toArray(String[]::new);
     }
 
     @Override
     public String[] getTryExceptions() {
-        return TryCatchBlockExceptionNameSource.stream().map(this::getTypeClassNameGI).toArray(String[]::new);
+        return TryCatchBlockExceptionNameSource.stream().filter(Objects::nonNull).map(this::getTypeClassNameGI).toArray(String[]::new);
     }
 
     @Override
@@ -237,15 +234,15 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     }
 
     protected void setParameterType(String argName) {
-        this.ParameterTypeNameSource.add(argName);
+       if (argName != null)this.ParameterTypeNameSource.add(argName);
     }
 
     protected void setThrowException(String exceptionName) {
-        this.ThrowExceptionNameSource.add(exceptionName);
+       if (exceptionName != null)this.ThrowExceptionNameSource.add(exceptionName);
     }
 
     protected void setAnnotation(AnnotationVs annName) {
-        this.AnnotationsSource.add(annName);
+       if (annName != null) this.AnnotationsSource.add(annName);
     }
 
 
@@ -274,7 +271,7 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     }
 
     protected void setTryCatchBlockException(String type) {
-        this.TryCatchBlockExceptionNameSource.add(type);
+        if (type == null) this.TryCatchBlockExceptionNameSource.add(type);
     }
 
     protected void setClassName(String value) {
@@ -305,6 +302,6 @@ public class MethodVs extends GeneralImpl implements GeneralMethod {
     }
 
     protected void setGenericType(GenericType genericType) {
-        GenericTypeSources.add(genericType);
+      if (genericType != null) GenericTypeSources.add(genericType);
     }
 }

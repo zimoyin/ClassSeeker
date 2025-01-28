@@ -91,7 +91,7 @@ public class VisitorClass extends ClassVisitor {
         // 解析泛型
         if (signature != null) {
             GenericType[] types = GenericType.getGenericTypes(signature);
-            for (GenericType genericType : types) {
+            if (types != null) for (GenericType genericType : types) {
                 fieldVs.setGenericType(genericType);
             }
         }
@@ -160,12 +160,13 @@ public class VisitorClass extends ClassVisitor {
         methodVs.setSignature(signature);
         if (signature != null) {
             GenericType[] types = GenericType.getGenericTypes(signature);
-            if (types !=null)for (GenericType genericType : GenericType.getGenericTypes(signature)) {
+            if (types != null) for (GenericType genericType : GenericType.getGenericTypes(signature)) {
                 methodVs.setGenericType(genericType);
             }
         }
         return new VisitorMethod(methodVs);
     }
+
 
 
     @Override

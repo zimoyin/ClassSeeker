@@ -1,10 +1,12 @@
 package io.github.zimoyin.seeker;
 
 import io.github.zimoyin.seeker.find.FindClass;
+import io.github.zimoyin.seeker.reference.ClassVsFactory;
 import lombok.NonNull;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +34,21 @@ public class Main {
             }
             return true;
         });
+        List<String> list1 = ClassSeeker.findClass(ClassSeeker.ClassALL, null, cls -> {
+            ArrayList<String> references = cls.getReferences();
+            return cls.getName().equals("io.github.test.Main");
+        });
 
         System.out.println();
-        System.out.println("class size: "+list.size());
-        System.out.println("time: "+(System.currentTimeMillis()-start)+"ms");
+        System.out.println("class size: " + list.size());
+        System.out.println("time: " + (System.currentTimeMillis() - start) + "ms");
     }
-    private void  aga(Object a){}
-    private void  agag(Menu a){}
+
+    private void aga(Object a) {
+    }
+
+    private void agag(Menu a) {
+    }
 
     private void a() throws IOException {
         @Deprecated int[] a = new int[12];

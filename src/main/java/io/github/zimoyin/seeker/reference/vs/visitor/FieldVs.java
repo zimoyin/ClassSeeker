@@ -79,7 +79,7 @@ public class FieldVs extends GeneralImpl implements GeneralField {
 
     @Override
     public GenericType getGenericType(String clsName) {
-        return GenericTypeSource.stream().filter(s -> s.getType().getClassName().equals(clsName)).distinct().findFirst().orElse(null);
+        return GenericTypeSource.stream().filter(s -> s.equals(clsName)).distinct().findFirst().orElse(null);
     }
 
     @Override

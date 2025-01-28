@@ -1,6 +1,7 @@
 package io.github.zimoyin.seeker;
 
 import io.github.zimoyin.seeker.reference.ClassVsFactory;
+import io.github.zimoyin.seeker.reference.vs.interfaces.GeneralField;
 import io.github.zimoyin.seeker.reference.vs.interfaces.GeneralMethod;
 import io.github.zimoyin.seeker.reference.vs.interfaces.GeneralMethodParameter;
 import io.github.zimoyin.seeker.reference.vs.visitor.ClassVs;
@@ -14,23 +15,12 @@ import java.util.Objects;
 @Deprecated
 public class Main2 {
     public static void main(String[] args) throws IOException, NoSuchFieldException, ClassNotFoundException {
-//        Class<?> anInt = Class.forName("int");
-//        System.out.println(anInt);
-        Class<Integer> aClass = int.class;
+        @TestAnnotation ClassVs classVS = ClassVsFactory.getClassVS(Test2.class);
 
-        @TestAnnotation ClassVs classVS = ClassVsFactory.getClassVS(Main2.class);
+        for (GeneralField field : classVS.getFields()) {
+            System.out.println(Arrays.toString(field.getGenericTypes()));
+        }
         for (GeneralMethod method : classVS.getMethods()) {
-            if (!Objects.equals(method.getName(), "a")) continue;
-            System.out.println("参数列表");
-            for (GeneralMethodParameter parameter : method.getParameters()) {
-                System.out.println(parameter.toString() + " -> " + Arrays.toString(parameter.getAnnotations()));
-            }
-            System.out.println("本地参数");
-            for (GeneralMethodParameter generalMethodParameter : method.getLocalVariable()) {
-                System.out.println(generalMethodParameter.getName() + " -> " + Arrays.toString(generalMethodParameter.getAnnotations()));
-            }
-            System.out.println("方法注解");
-            System.out.println(method + " -> " + Arrays.toString(method.getAnnotations()));
             System.out.println("方法泛型");
             System.out.println(Arrays.toString(method.getGenericTypes()));
         }
@@ -48,7 +38,9 @@ public class Main2 {
     }
 }
 
-class Test2<A> {
-    public <B extends Number,C extends Integer> void a(A a, B b) {
+class Test2<A extends Test> {
+    A a;
+    public <B extends Number,C extends Integer> B a(A a, B b) {
+        return null;
     }
 }
