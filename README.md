@@ -7,11 +7,13 @@ ClassSeeker是一个Java项目，提供了一个类扫描工具，使用ASM库�
 
 引入当前的依赖
 ```xml
+<!-- https://mvnrepository.com/artifact/io.github.zimoyin/ClassSeeker -->
 <dependency>
-    <groupId>com.com.github.zimoyin</groupId>
+    <groupId>io.github.zimoyin</groupId>
     <artifactId>ClassSeeker</artifactId>
     <version>1.0.2</version>
 </dependency>
+
 ```
 
 ## 如何使用ClassSeeker
